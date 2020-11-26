@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using CryptoExchange.Net;
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects;
@@ -78,7 +81,51 @@ namespace LiveCoin.Net
 			SetAuthenticationProvider(new LiveCoinAuthenticationProvider(new ApiCredentials(apiKey, apiSecret), ArrayParametersSerialization.MultipleValues));
 		}
 
+		/// <summary>
+		/// Get information on specified currency pair for the last 24 hours.
+		/// </summary>
+		/// <param name="symbol">Identifier of currency pair.</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>Information on specified currency pair</returns>
+		public async Task<WebCallResult<LiveCoin24HTicker>> Get24HTickerAsync(string symbol, CancellationToken ct = default)
+		{
+			symbol.ValidateLiveCoinSymbol();
+			var parameters = new Dictionary<string, object> { { "currencyPair", symbol } };
+			return await SendRequest<LiveCoin24HTicker>(GetUrl(Price24HEndpoint), HttpMethod.Get, ct, parameters).ConfigureAwait(false);
+		}
+		/// <summary>
+		/// Get information on specified currency pair for the last 24 hours.
+		/// </summary>
+		/// <param name="symbol">Identifier of currency pair</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>Information on specified currency pair</returns>
+		public WebCallResult<LiveCoin24HTicker> Get24HTicker(string symbol, CancellationToken ct = default) => Get24HTickerAsync(symbol, ct).Result;
+
+
+		/// <summary>
+		/// Get information on currency pairs for the last 24 hours.
+		/// </summary>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>Information on specified currency pair</returns>
+		public async Task<WebCallResult<LiveCoin24HTicker[]>> Get24HTickersAsync(CancellationToken ct = default)
+		{
+			return await SendRequest<LiveCoin24HTicker[]>(GetUrl(Price24HEndpoint), HttpMethod.Get, ct).ConfigureAwait(false);
+		}
+		/// <summary>
+		/// Get information on currency pairs for the last 24 hours.
+		/// </summary>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>Information on specified currency pair</returns>
+		public WebCallResult<LiveCoin24HTicker[]> Get24HTickers(CancellationToken ct = default) => Get24HTickersAsync(ct).Result;
+
 		#endregion
+		#endregion
+		#region helpers
+		private Uri GetUrl(string endpoint)
+		{
+			var result = $"{BaseAddress}/{endpoint}";
+			return new Uri(result);
+		}
 		#endregion
 	}
 }

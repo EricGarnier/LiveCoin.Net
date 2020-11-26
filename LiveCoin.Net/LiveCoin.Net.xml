@@ -33,6 +33,102 @@
             <param name="apiKey">The api key</param>
             <param name="apiSecret">The api secret</param>
         </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.Get24HTickerAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get information on specified currency pair for the last 24 hours.
+            </summary>
+            <param name="symbol">Identifier of currency pair.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Information on specified currency pair</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.Get24HTicker(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get information on specified currency pair for the last 24 hours.
+            </summary>
+            <param name="symbol">Identifier of currency pair</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Information on specified currency pair</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.Get24HTickersAsync(System.Threading.CancellationToken)">
+            <summary>
+            Get information on currency pairs for the last 24 hours.
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>Information on specified currency pair</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.Get24HTickers(System.Threading.CancellationToken)">
+            <summary>
+            Get information on currency pairs for the last 24 hours.
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>Information on specified currency pair</returns>
+        </member>
+        <member name="T:LiveCoin.Net.LiveCoinHelpers">
+            <summary>
+            Helper methods for the LiveCoin API
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinHelpers.ValidateLiveCoinSymbol(System.String)">
+            <summary>
+            Validate the string is a valid LiveCoin symbol.
+            </summary>
+            <param name="symbolString">string to validate</param>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoin24HTicker">
+            <summary>
+            Price statistics of the last 24 hours
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.Symbol">
+            <summary>
+            Symbol. Only in allTickers
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.MaxBidPrice">
+            <summary>
+            Maximal bid for the last 24 hours
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.MinBidPrice">
+            <summary>
+            Minimal ask for the last 24 hours
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.BidPrice">
+            <summary>
+            Best current bid 
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.AskPrice">
+            <summary>
+            Best current ask
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.LastPrice">
+            <summary>
+            Last price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.HighPrice">
+            <summary>
+            The higest price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.LowPrice">
+            <summary>
+            The lowest price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.Volume">
+            <summary>
+            The volume
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.VWap">
+            <summary>
+            The vwap
+            </summary>
+        </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinClientOptions">
             <summary>
             Options for the LiveCoin client
