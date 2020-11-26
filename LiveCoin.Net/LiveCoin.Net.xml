@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LiveCoin.Net</name>
+    </assembly>
+    <members>
+        <member name="T:LiveCoin.Net.LiveCoinClient">
+            <summary>
+            Client providing access to the LiveCoin REST Api
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.#ctor">
+            <summary>
+            Create a new instance of LiveCoinClient using the default options
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.#ctor(LiveCoin.Net.Objects.LiveCoinClientOptions)">
+            <summary>
+            Create a new instance of LiveCoinClient using provided options
+            </summary>
+            <param name="options">The options to use for this client</param>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.SetDefaultOptions(LiveCoin.Net.Objects.LiveCoinClientOptions)">
+            <summary>
+            Set the default options to be used when creating new clients
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.SetApiCredentials(System.String,System.String)">
+            <summary>
+            Set the API key and secret
+            </summary>
+            <param name="apiKey">The api key</param>
+            <param name="apiSecret">The api secret</param>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinClientOptions">
+            <summary>
+            Options for the LiveCoin client
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.Objects.LiveCoinClientOptions.#ctor">
+            <summary>
+            ctor
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.Objects.LiveCoinClientOptions.#ctor(System.String)">
+            <summary>
+            ctor
+            </summary>
+            <param name="baseAddress">Сustom url to connect via mirror website</param>
+        </member>
+        <member name="M:LiveCoin.Net.Objects.LiveCoinClientOptions.Copy">
+            <summary>
+            Return a copy of these options
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

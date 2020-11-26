@@ -1,0 +1,7 @@
+language: csharp
+mono: none
+solution: LiveCoin.Net.sln
+dotnet: 3.0
+script:
+ - dotnet build LiveCoin.Net/LiveCoin.Net.csproj --framework "netstandard2.1"
+ - dotnet test LiveCoin.Net.UnitTests/LiveCoin.Net.UnitTests.csproj
