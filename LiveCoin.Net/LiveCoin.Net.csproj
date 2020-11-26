@@ -7,7 +7,6 @@
   <PropertyGroup>
     <PackageId>LiveCoin.Net</PackageId>
     <Authors>EricGarnier</Authors>
-    <PackageVersion>0.0.1</PackageVersion>
     <AssemblyVersion>0.0.2</AssemblyVersion>
     <Description>LiveCoin.Net is a .Net wrapper for the LiveCoin API. It includes all features the API provides, REST API and Websocket, using clear and readable objects including but not limited to Reading market info, Placing and managing orders and Reading balances and funds</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
