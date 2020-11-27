@@ -4,6 +4,66 @@
         <name>LiveCoin.Net</name>
     </assembly>
     <members>
+        <member name="T:LiveCoin.Net.Enums.Side">
+            <summary>
+            Side of a trade or order
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.Side.Buy">
+            <summary>
+            Buy Side
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.Side.Sell">
+            <summary>
+            Sell Side
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Enums.WalletStatus">
+            <summary>
+            status of a wallet
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.WalletStatus.Normal">
+            <summary>
+             Wallet online
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.WalletStatus.Delayed">
+            <summary>
+            Wallet delayed (no new block for 1-2 hours)
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.WalletStatus.Blocked">
+            <summary>
+            Out of sync(no new block for at least 2 hours)
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.WalletStatus.BlockedLong">
+            <summary>
+            No new block for at least 24h(Out of sync)
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.WalletStatus.Down">
+            <summary>
+            Wallet temporary offline
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.WalletStatus.Delisted">
+            <summary>
+            Asset will be delisted soon, withdraw your funds.
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.WalletStatus.ClosedCashin">
+            <summary>
+            Only withdrawal is available
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.WalletStatus.ClosedCashout">
+            <summary>
+            Only deposit is available
+            </summary>
+        </member>
         <member name="T:LiveCoin.Net.LiveCoinClient">
             <summary>
             Client providing access to the LiveCoin REST Api
@@ -62,6 +122,116 @@
             </summary>
             <param name="ct">Cancellation token</param>
             <returns>Information on specified currency pair</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetTradesHistoryAsync(System.String,System.Nullable{System.Boolean},System.Nullable{LiveCoin.Net.Enums.Side},System.Threading.CancellationToken)">
+            <summary>
+            Get a detailed review on the latest transactions for requested currency pair. You may receive the update for the last hour or for the last minute.
+            </summary>
+            <param name="symbol">Identifier of currency pair.</param>
+            <param name="onlyForLastMinute">Return information for the last minute if true. Return information for the last hour if false.</param>
+            <param name="onlySide">Return information for only one side.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Information on all currency pairs</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetTradesHistory(System.String,System.Nullable{System.Boolean},System.Nullable{LiveCoin.Net.Enums.Side},System.Threading.CancellationToken)">
+            <summary>
+            Get a detailed review on the latest transactions for requested currency pair. You may receive the update for the last hour or for the last minute.
+            </summary>
+            <param name="symbol">Identifier of currency pair.</param>
+            <param name="onlyForLastMinute">Return information for the last minute if true. Return information for the last hour if false.</param>
+            <param name="onlySide">Return information for only one side.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Information on all currency pairs</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetOrderBookAsync(System.String,System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Get the orderbook for specified currency pair (you may enable the feature of grouping orders by price).
+            </summary>
+            <param name="symbol">Identifier of currency pair.</param>
+            <param name="groupByPrice">If true, orders will be grouped by price</param>
+            <param name="depth">Returns maximum amount of bids (asks).</param>
+            <param name="ct">Cancellation token</param>
+            <returns>The order book</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetOrderBook(System.String,System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Get the orderbook for specified currency pair (you may enable the feature of grouping orders by price).
+            </summary>
+            <param name="symbol">Identifier of currency pair.</param>
+            <param name="groupByPrice">If true, orders will be grouped by price</param>
+            <param name="depth">Returns maximum amount of bids (asks).</param>
+            <param name="ct">Cancellation token</param>
+            <returns>The order book</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetAllOrderBookAsync(System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Get the orderbook for all currency pairs (you may enable the feature of grouping orders by price).
+            </summary>
+            <param name="groupByPrice">If true, orders will be grouped by price</param>
+            <param name="depth">Returns maximum amount of bids (asks).</param>
+            <param name="ct">Cancellation token</param>
+            <returns>A dictionary of all order books by symbol</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetAllOrderBook(System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Get the orderbook for all currency pairs (you may enable the feature of grouping orders by price).
+            </summary>
+            <param name="groupByPrice">If true, orders will be grouped by price</param>
+            <param name="depth">Returns maximum amount of bids (asks).</param>
+            <param name="ct">Cancellation token</param>
+            <returns>A dictionary of all order books by symbol</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetMaxBidAndMinAskAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns maximum bid and minimum ask in the current orderbook.
+            Without specifying a currency pair, all pairs are returned.
+            </summary>
+            <param name="symbol">Identifier of currency pair.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Maximum bid and minimum ask in the orderbook.</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetMaxBidAndMinAsk(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns maximum bid and minimum ask in the current orderbook.
+            Without specifying a currency pair, all pairs are returned.
+            </summary>
+            <param name="symbol">Identifier of currency pair.</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Maximum bid and minimum ask in the orderbook.</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetExchangeRestrictionsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Returns the limit for minimum amount to open order, for each pair. Also returns maximum number of digits after the decimal point in price value.
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>The limit for minimum amount to open order, for each pair. Also the maximum number of digits after the decimal point in price value.</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetExchangeRestrictions(System.Threading.CancellationToken)">
+            <summary>
+            Returns the limit for minimum amount to open order, for each pair. Also returns maximum number of digits after the decimal point in price value.
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>The limit for minimum amount to open order, for each pair. Also the maximum number of digits after the decimal point in price value.</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetCoinsInfoAsync(System.Threading.CancellationToken)">
+            <summary>
+            Returns public data for currencies.
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>Public data for currencies.</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetCoinsInfo(System.Threading.CancellationToken)">
+            <summary>
+            Returns public data for currencies.
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>Public data for currencies.</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.ParseErrorResponse(Newtonsoft.Json.Linq.JToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.TryParseError(Newtonsoft.Json.Linq.JToken)">
+            <inheritdoc />
         </member>
         <member name="T:LiveCoin.Net.LiveCoinHelpers">
             <summary>
@@ -150,6 +320,186 @@
             Return a copy of these options
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinCoinInfo">
+            <summary>
+            Public data for currencies
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCoinInfo.MinimalOrderBTC">
+            <summary>
+            Minimal order in BTC
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCoinInfo.CoinInfos">
+            <summary>
+            Public data for currencies
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinCoinInfoEntry">
+            <summary>
+            public data for a currency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCoinInfoEntry.Name">
+            <summary>
+            Name of cryptocurrency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCoinInfoEntry.Symbol">
+            <summary>
+            Trading symbol of cryptocurrency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCoinInfoEntry.WalletStatus">
+            <summary>
+            Actual status of the wallet
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCoinInfoEntry.WithdrawFee">
+            <summary>
+            Fee for outgoing transactions
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCoinInfoEntry.MinDepositAmount">
+            <summary>
+            Minimum amount for deposit
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCoinInfoEntry.MinWithdrawAmount">
+            <summary>
+            Minimum amount for withdrawal
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinExchangeRestrictions">
+            <summary>
+            Restriction for all currency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeRestrictions.MinBtcVolume">
+            <summary>
+            Minimum BTC volume
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeRestrictions.Restrictions">
+            <summary>
+            Minimum amount to open order, maximum number of digits after the decimal point in price value.
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinMaxBidMinAsk">
+            <summary>
+            Maximun bid and minimum ask
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinMaxBidMinAsk.CurrencyPairs">
+            <summary>
+            All max bid and min ask per currency pair
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinMaxBidMinAskEntry">
+            <summary>
+            Maximun bid and minimum ask for a symbol
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinMaxBidMinAskEntry.Symbol">
+            <summary>
+            Symbol.
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinMaxBidMinAskEntry.MaxBid">
+            <summary>
+            Maximum bid 
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinMaxBidMinAskEntry.MinAsk">
+            <summary>
+            Minimum ask 
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinOrderBook">
+            <summary>
+            The orderbook for a currency pair
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinOrderBook.Time">
+            <summary>
+            Orderbook timestamp
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinOrderBook.Asks">
+            <summary>
+            Asks
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinOrderBook.Bids">
+            <summary>
+            Bids
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinOrderBookEntry">
+            <summary>
+            An entry in the order book
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinOrderBookEntry.Price">
+            <summary>
+            The price of this order book entry
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinOrderBookEntry.Quantity">
+            <summary>
+            The quantity of this price in the order book
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinRestriction">
+            <summary>
+             minimum amount to open order, for each pair and maximum number of digits after the decimal point in price value.
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinRestriction.Symbol">
+            <summary>
+            Symbol.
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinRestriction.PriceScale">
+            <summary>
+            maximum number of digits after the decimal point in price value
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinRestriction.MinimumLimitQuantity">
+            <summary>
+            minimum amount to open order
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinTrade">
+            <summary>
+            Detailed on a transactions for a currency pair
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTrade.Timestamp">
+            <summary>
+            Transaction time
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTrade.Id">
+            <summary>
+            Transaction Id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTrade.Price">
+            <summary>
+            Transaction price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTrade.Quantity">
+            <summary>
+            Transaction quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTrade.Side">
+            <summary>
+            Side of the trade
+            </summary>
         </member>
     </members>
 </doc>
