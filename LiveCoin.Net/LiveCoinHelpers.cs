@@ -8,13 +8,13 @@ namespace LiveCoin.Net
     /// <summary>
     /// Helper methods for the LiveCoin API
     /// </summary>
-    public static class LiveCoinHelpers
+    internal static class LiveCoinHelpers
     {
         /// <summary>
         /// Validate the string is a valid LiveCoin symbol.
         /// </summary>
         /// <param name="symbolString">string to validate</param>
-        public static void ValidateLiveCoinSymbol(this string symbolString)
+        internal static void ValidateLiveCoinSymbol(this string symbolString)
         {
             if (string.IsNullOrEmpty(symbolString))
                 throw new ArgumentException("Symbol is not provided");
@@ -22,5 +22,10 @@ namespace LiveCoin.Net
             if (!Regex.IsMatch(symbolString, "^([A-Za-z]{3,})/([A-Za-z]{3,})$"))
                 throw new ArgumentException($"{symbolString} is not a valid LiveCoin symbol. Should be [BaseCurrency]/[QuoteCurrency], e.g. ETH/BTC");
         }
+        internal static long ToUnixMilliseconds(this DateTime dateTime)
+        {
+            return (long)((dateTime - new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds);
+        }
+
     }
 }

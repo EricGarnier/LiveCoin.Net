@@ -6,7 +6,7 @@ using LiveCoin.Net.Enums;
 
 namespace LiveCoin.Net.Converters
 {
-	class WalletStatusConverter : BaseConverter<WalletStatus>
+	internal class WalletStatusConverter : BaseConverter<WalletStatus>
     {
         public WalletStatusConverter() : this(true) { }
         public WalletStatusConverter(bool quotes) : base(quotes) { }

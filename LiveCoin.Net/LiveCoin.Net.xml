@@ -4,6 +4,151 @@
         <name>LiveCoin.Net</name>
     </assembly>
     <members>
+        <member name="T:LiveCoin.Net.Enums.BalanceType">
+            <summary>
+            Balance types
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.BalanceType.Total">
+            <summary>
+            Total balance
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.BalanceType.Available">
+            <summary>
+            Available balance
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.BalanceType.Trade">
+            <summary>
+            Trade balance
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.BalanceType.AvailableWithdrawal">
+            <summary>
+            Available for withdraw balance
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Enums.OrderStatus">
+            <summary>
+            Order status
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.New">
+            <summary>
+            New order
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.Open">
+            <summary>
+            Open
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.Expired">
+            <summary>
+            Expired
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.Cancelled">
+            <summary>
+            Cancelled
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.Executed">
+            <summary>
+            Executed
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.PartiallyFilled">
+            <summary>
+            Partially filled
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.PartiallyFilledAndCancelled">
+            <summary>
+            Partially filled and cancelled
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.PartiallyFilledAndExpired">
+            <summary>
+            Partially filled and expired
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatus.UnknownStatus">
+            <summary>
+            Unknown status
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Enums.OrderStatusFilter">
+            <summary>
+            Filter by order type
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.All">
+            <summary>
+            All orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.Open">
+            <summary>
+            Open orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.Closed">
+            <summary>
+            Executed or cancelled orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.Cancelled">
+            <summary>
+            Cancelled orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.NotCancelled">
+            <summary>
+            All orders except cancelled ones
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.Partially">
+            <summary>
+            partially filled orders
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Enums.OrderType">
+            <summary>
+            Order type
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderType.MarketSell">
+            <summary>
+            Market sell
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderType.MarketBuy">
+            <summary>
+            Market buy
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderType.LimitSell">
+            <summary>
+            Limit sell
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderType.LimitBuy">
+            <summary>
+            Limit sell
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderType.UnknownType">
+            <summary>
+            Unknown type
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderType.MarketBuyInFullAmount">
+            <summary>
+            Market buy in full amount
+            </summary>
+        </member>
         <member name="T:LiveCoin.Net.Enums.Side">
             <summary>
             Side of a trade or order
@@ -17,6 +162,31 @@
         <member name="F:LiveCoin.Net.Enums.Side.Sell">
             <summary>
             Sell Side
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Enums.TransactionType">
+            <summary>
+            Transaction type
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.TransactionType.Buy">
+            <summary>
+            Buy
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.TransactionType.Sell">
+            <summary>
+            Sell
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.TransactionType.Deposit">
+            <summary>
+            Deposit
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.TransactionType.Withdrawal">
+            <summary>
+            Withdrawal
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Enums.WalletStatus">
@@ -63,6 +233,15 @@
             <summary>
             Only deposit is available
             </summary>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinAuthenticationProvider.CreateParamOrderedString(System.Collections.Generic.Dictionary{System.String,System.Object},System.Boolean,CryptoExchange.Net.Objects.ArrayParametersSerialization)">
+            <summary>
+            Create a query string of the specified parameters
+            </summary>
+            <param name="parameters">The parameters to use</param>
+            <param name="urlEncodeValues">Whether or not the values should be url encoded</param>
+            <param name="serializationType">How to serialize array parameters</param>
+            <returns></returns>
         </member>
         <member name="T:LiveCoin.Net.LiveCoinClient">
             <summary>
@@ -227,6 +406,182 @@
             <param name="ct">Cancellation token</param>
             <returns>Public data for currencies.</returns>
         </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetClientTradesAsync(System.String,System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Get information on your latest transactions. The return may be limited by the parameters below.
+            </summary>
+            <param name="symbol">Identifier of currency pair. If null, all pairs will be returned.</param>
+            <param name="newOrdersFirst">Sorting order. If true then new orders will be first, otherwise old orders will be first.</param>
+            <param name="limit">Number of items per page</param>
+            <param name="pageOffset">Page offset (position of the first item on the page)</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Latest transactions</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetClientTrades(System.String,System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Get information on your latest transactions. The return may be limited by the parameters below.
+            </summary>
+            <param name="symbol">Identifier of currency pair. If null, all pairs will be returned.</param>
+            <param name="newOrdersFirst">Sorting order. If true then new orders will be first, otherwise old orders will be first.</param>
+            <param name="limit">Number of items per page</param>
+            <param name="pageOffset">Page offset (position of the first item on the page)</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Latest transactions</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetClientOrdersAsync(System.String,System.Nullable{LiveCoin.Net.Enums.OrderStatusFilter},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Get a detailed review of your orders for requested currency pair. You can optionally limit return of orders of a certain type (return only open or only closed orders)
+            </summary>
+            <param name="symbol">Identifier of currency pair. If undefined, all pairs will be returned.</param>
+            <param name="openClosed">Order type filter. Default value: All</param>
+            <param name="issuedFrom">Start date</param>
+            <param name="issuedTo">End date</param>
+            <param name="startRow">Sequence number of the first record</param>
+            <param name="endRow">Sequence number of the last record</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Detailed review of your orders</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetClientOrders(System.String,System.Nullable{LiveCoin.Net.Enums.OrderStatusFilter},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Threading.CancellationToken)">
+            <summary>
+            Get a detailed review of your orders for requested currency pair. You can optionally limit return of orders of a certain type (return only open or only closed orders)
+            </summary>
+            <param name="symbol">Identifier of currency pair. If undefined, all pairs will be returned.</param>
+            <param name="openClosed">Order type filter. Default value: All</param>
+            <param name="issuedFrom">Start date</param>
+            <param name="issuedTo">End date</param>
+            <param name="startRow">Sequence number of the first record</param>
+            <param name="endRow">Sequence number of the last record</param>
+            <param name="ct">Cancellation token</param>
+            <returns>Detailed review of your orders</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetClientOrderAsync(System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Get the order information by its ID
+            </summary>
+            <param name="orderId">Order ID</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order information</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetClientOrder(System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Get the order information by its ID
+            </summary>
+            <param name="orderId">Order ID</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order information</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetBalancesAsync(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+            <summary>
+            Returns an array of your balances. There are four types of balances for every currency: 
+            total : total, 
+            available : funds available for trading,
+            trade : funds in open orders,
+            availableWithdrawal : funds available for withdraw
+            </summary>
+            <param name="currencies">list of currency (currencies). If not specified, response will return balances for all currencies</param>
+            <param name="ct">Cancellation token</param>
+            <returns>array of your balances</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetBalances(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+            <summary>
+            Returns an array of your balances. There are four types of balances for every currency: 
+            total : total, 
+            available : funds available for trading,
+            trade : funds in open orders,
+            availableWithdrawal : funds available for withdraw
+            </summary>
+            <param name="currencies">list of currency (currencies). If not specified, response will return balances for all currencies</param>
+            <param name="ct">Cancellation token</param>
+            <returns>array of your balances</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetAvailableBalanceAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns the funds available for trading
+            </summary>
+            <param name="currency">currency</param>
+            <param name="ct">Cancellation token</param>
+            <returns>your balance</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetAvailableBalance(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns the funds available for trading
+            </summary>
+            <param name="currency">currency</param>
+            <param name="ct">Cancellation token</param>
+            <returns>your balance</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetPaymentHistoryAsync(System.DateTime,System.DateTime,System.Collections.Generic.IEnumerable{LiveCoin.Net.Enums.TransactionType},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Returns a list of your transactions
+            </summary>
+            <param name="startDate">Start date</param>
+            <param name="endDate">End date</param>
+            <param name="transactionTypes">Transaction types</param>
+            <param name="limit">Maximum number of results</param>
+            <param name="offset">First index</param>
+            <param name="ct">Cancellation token</param>
+            <returns>list of your transactions</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetPaymentHistory(System.DateTime,System.DateTime,System.Collections.Generic.IEnumerable{LiveCoin.Net.Enums.TransactionType},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Returns a list of your transactions
+            </summary>
+            <param name="startDate">Start date</param>
+            <param name="endDate">End date</param>
+            <param name="transactionTypes">Transaction types</param>
+            <param name="limit">Maximum number of results</param>
+            <param name="offset">First index</param>
+            <param name="ct">Cancellation token</param>
+            <returns>list of your transactions</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetPaymentHistorySizeAsync(System.DateTime,System.DateTime,System.Collections.Generic.IEnumerable{LiveCoin.Net.Enums.TransactionType},System.Threading.CancellationToken)">
+            <summary>
+            Returns the number of your transactions
+            </summary>
+            <param name="startDate">Start date</param>
+            <param name="endDate">End date</param>
+            <param name="transactionTypes">Transaction types</param>
+            <param name="ct">Cancellation token</param>
+            <returns>number of transactions</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetPaymentHistorySize(System.DateTime,System.DateTime,System.Collections.Generic.IEnumerable{LiveCoin.Net.Enums.TransactionType},System.Threading.CancellationToken)">
+            <summary>
+            Returns the number of your transactions
+            </summary>
+            <param name="startDate">Start date</param>
+            <param name="endDate">End date</param>
+            <param name="transactionTypes">Transaction types</param>
+            <param name="ct">Cancellation token</param>
+            <returns>number of transactions</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetCommissionAsync(System.Threading.CancellationToken)">
+            <summary>
+            Returns actual trading fee for customer
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>actual trading fee for customer</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetCommission(System.Threading.CancellationToken)">
+            <summary>
+            Returns actual trading fee for customer
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>actual trading fee for customer</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetCommissionCommonInfoAsync(System.Threading.CancellationToken)">
+            <summary>
+            Returns actual trading fee and volume for the last 30 days in USD
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>actual trading fee and volume for the last 30 days in USD for customer</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetCommissionCommonInfo(System.Threading.CancellationToken)">
+            <summary>
+            Returns actual trading fee and volume for the last 30 days in USD
+            </summary>
+            <param name="ct">Cancellation token</param>
+            <returns>actual trading fee and volume for the last 30 days in USD for customer</returns>
+        </member>
         <member name="M:LiveCoin.Net.LiveCoinClient.ParseErrorResponse(Newtonsoft.Json.Linq.JToken)">
             <inheritdoc />
         </member>
@@ -299,6 +654,26 @@
             The vwap
             </summary>
         </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinBalanceElement">
+            <summary>
+            Element of balance
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinBalanceElement.BalanceType">
+            <summary>
+            Balance type
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinBalanceElement.Asset">
+            <summary>
+            Currency code
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinBalanceElement.Amount">
+            <summary>
+            Amaount
+            </summary>
+        </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinClientOptions">
             <summary>
             Options for the LiveCoin client
@@ -320,6 +695,141 @@
             Return a copy of these options
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinClientOrder">
+            <summary>
+            detailed order
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.Id">
+            <summary>
+            Order id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.Symbol">
+            <summary>
+            Identifier of currency pair
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.GoodUntilTime">
+            <summary>
+            Good until time
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.OrderType">
+            <summary>
+            Order type
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.OrderStatus">
+            <summary>
+            Order status
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.IssueTime">
+            <summary>
+            Issue yime
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.Price">
+            <summary>
+            Price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.RemainingQuantity">
+            <summary>
+            Remaining quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.Commission">
+            <summary>
+            Commission
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.CommissionRate">
+            <summary>
+            Commission rate
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrder.LastModification">
+            <summary>
+            Last update
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinClientOrders">
+            <summary>
+            Detailed review of your orders
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrders.TotalRows">
+            <summary>
+            number of records
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrders.StartRow">
+            <summary>
+            Sequence number of the first record
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrders.EndRow">
+            <summary>
+            Sequence number of the last record
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientOrders.Orders">
+            <summary>
+            Detailed orders
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinClientTrade">
+            <summary>
+            Detailed on a client transactions
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientTrade.Timestamp">
+            <summary>
+            Transaction time
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientTrade.Id">
+            <summary>
+            Transaction Id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientTrade.Symbol">
+            <summary>
+            Trading symbol of cryptocurrency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientTrade.Price">
+            <summary>
+            Transaction price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientTrade.Quantity">
+            <summary>
+            Transaction quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientTrade.Commission">
+            <summary>
+            Transaction commission
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientTrade.Side">
+            <summary>
+            Side of the trade
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinClientTrade.ClientOrderId">
+            <summary>
+            Client order id
+            </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinCoinInfo">
             <summary>
@@ -371,6 +881,91 @@
             Minimum amount for withdrawal
             </summary>
         </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinCommissionInfo">
+            <summary>
+            actual trading fee and volume for the last 30 days in USD
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCommissionInfo.Commission">
+            <summary>
+            Commission for customer
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCommissionInfo.Last30DaysAmountAsUSD">
+            <summary>
+            Last 30 days amount as USD
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinCommissionResult">
+            <summary>
+            Actual trading fee for customer
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCommissionResult.Fee">
+            <summary>
+            Fee for customer
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinExchangeOrder">
+            <summary>
+            exchange order information 
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.OrderId">
+            <summary>
+            Order Id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.ClientId">
+            <summary>
+            Client order Id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.Status">
+            <summary>
+            Order status
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.Symbol">
+            <summary>
+            Symbol
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.Price">
+            <summary>
+            Price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.RemainingQuantity">
+            <summary>
+            Remaining quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.Blocked">
+            <summary>
+            Blocked
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.BlockedRemain">
+            <summary>
+            Remaining blocked
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.CommissionRate">
+            <summary>
+            Commission rate
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeOrder.Trades">
+            <summary>
+            Trades
+            </summary>
+        </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinExchangeRestrictions">
             <summary>
             Restriction for all currency
@@ -384,6 +979,41 @@
         <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeRestrictions.Restrictions">
             <summary>
             Minimum amount to open order, maximum number of digits after the decimal point in price value.
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinExchangeTrades">
+            <summary>
+            Trades
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeTrades.Trades">
+            <summary>
+            Number of trades
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeTrades.Amount">
+            <summary>
+            Amount
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeTrades.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeTrades.AvgPrice">
+            <summary>
+            Average price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeTrades.Commission">
+            <summary>
+            Commission
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinExchangeTrades.Bonus">
+            <summary>
+            Bonus
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinMaxBidMinAsk">
@@ -499,6 +1129,66 @@
         <member name="P:LiveCoin.Net.Objects.LiveCoinTrade.Side">
             <summary>
             Side of the trade
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinTransaction">
+            <summary>
+            A transaction
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.Id">
+            <summary>
+            Transaction Id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.TransactionType">
+            <summary>
+            Transaction type
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.Date">
+            <summary>
+            Date
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.Amount">
+            <summary>
+            Amount
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.Fee">
+            <summary>
+            Fee
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.FixedCurrency">
+            <summary>
+            Fixed currency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.TaxCurrency">
+            <summary>
+            Tax currency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.VariableAmount">
+            <summary>
+            Variable Amount 
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.VariableCurrency">
+            <summary>
+            Variable currency 
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.External">
+            <summary>
+            External 
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinTransaction.Login">
+            <summary>
+            Login
             </summary>
         </member>
     </members>

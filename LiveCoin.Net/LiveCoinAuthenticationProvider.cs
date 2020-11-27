@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -30,7 +31,7 @@ namespace LiveCoin.Net
 			if (Credentials.Key == null)
 				throw new ArgumentException("No valid API credentials provided. Key/Secret needed.");
 
-			var query = parameters.CreateParamString(true, arraySerialization);
+			var query = CreateParamOrderedString(parameters, true, arraySerialization);
 			return new Dictionary<string, string> { { "Api-Key", Credentials.Key.GetString() } ,
 				{"Sign",  ByteToString(encryptor.ComputeHash(Encoding.UTF8.GetBytes(query)))} };
 		}
@@ -38,6 +39,39 @@ namespace LiveCoin.Net
 		public override string Sign(string toSign)
 		{
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Create a query string of the specified parameters
+		/// </summary>
+		/// <param name="parameters">The parameters to use</param>
+		/// <param name="urlEncodeValues">Whether or not the values should be url encoded</param>
+		/// <param name="serializationType">How to serialize array parameters</param>
+		/// <returns></returns>
+		private static string CreateParamOrderedString(Dictionary<string, object> parameters, bool urlEncodeValues, ArrayParametersSerialization serializationType)
+		{
+			var uriString = "";
+			foreach (var entry in parameters.OrderBy(kp => kp.Key).ToList())
+			{
+				if (entry.Value.GetType().IsArray)
+				{
+					if (serializationType == ArrayParametersSerialization.Array)
+						uriString += $"{string.Join("&", ((object[])(urlEncodeValues ? Uri.EscapeDataString(entry.Value.ToString()) : entry.Value)).Select(v => $"{entry.Key}[]={v}"))}&";
+					else
+					{
+						var array = (Array)entry.Value;
+						uriString += string.Join("&", array.OfType<object>().Select(a => $"{entry.Key}={Uri.EscapeDataString(a.ToString())}"));
+						uriString += "&";
+					}
+				}
+				else
+				{
+					uriString += $"{entry.Key}={(urlEncodeValues ? Uri.EscapeDataString(entry.Value.ToString()) : entry.Value)}";
+					uriString += "&";
+				}
+			}
+			uriString = uriString.TrimEnd('&');
+			return uriString;
 		}
 	}
 }
