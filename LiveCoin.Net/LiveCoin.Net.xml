@@ -582,6 +582,100 @@
             <param name="ct">Cancellation token</param>
             <returns>actual trading fee and volume for the last 30 days in USD for customer</returns>
         </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.BuyLimitOrderAsync(System.String,System.Decimal,System.Decimal,System.Threading.CancellationToken)">
+            <summary>
+            Open a buy order (limit) for particular currency pair.
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="price">price</param>
+            <param name="quantity">quantity</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order result with order id</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.BuyLimitOrder(System.String,System.Decimal,System.Decimal,System.Threading.CancellationToken)">
+            <summary>
+            Open a buy order (limit) for particular currency pair.
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="price">price</param>
+            <param name="quantity">quantity</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order result with order id</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.SellLimitOrderAsync(System.String,System.Decimal,System.Decimal,System.Threading.CancellationToken)">
+            <summary>
+            Open a sell order (limit) for particular currency pair.
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="price">price</param>
+            <param name="quantity">quantity</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order result with order id</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.SellLimitOrder(System.String,System.Decimal,System.Decimal,System.Threading.CancellationToken)">
+            <summary>
+            Open a sell order (limit) for particular currency pair.
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="price">price</param>
+            <param name="quantity">quantity</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order result with order id</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.BuyMarketOrderAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
+            <summary>
+            Open a buy order (market) for particular currency pair.
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="quantity">quantity</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order result with order id</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.BuyMarketOrder(System.String,System.Decimal,System.Threading.CancellationToken)">
+            <summary>
+            Open a buy order (market) for particular currency pair.
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="quantity">quantity</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order result with order id</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.SellMarketOrderAsync(System.String,System.Decimal,System.Threading.CancellationToken)">
+            <summary>
+            Open a sell order (market) for particular currency pair.
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="quantity">quantity</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order result with order id</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.SellMarketOrder(System.String,System.Decimal,System.Threading.CancellationToken)">
+            <summary>
+            Open a sell order (market) for particular currency pair.
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="quantity">quantity</param>
+            <param name="ct">Cancellation token</param>
+            <returns>order result with order id</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.CancelLimitOrderAsync(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Cancel order
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="orderId">the order id</param>
+            <param name="ct">Cancellation token</param>
+            <returns>cancellation request result</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.CancelLimitOrder(System.String,System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Cancel order
+            </summary>
+            <param name="symbol">currencyPair</param>
+            <param name="orderId">the order id</param>
+            <param name="ct">Cancellation token</param>
+            <returns>cancellation request result</returns>
+        </member>
         <member name="M:LiveCoin.Net.LiveCoinClient.ParseErrorResponse(Newtonsoft.Json.Linq.JToken)">
             <inheritdoc />
         </member>
@@ -672,6 +766,31 @@
         <member name="P:LiveCoin.Net.Objects.LiveCoinBalanceElement.Amount">
             <summary>
             Amaount
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinCancelResult">
+            <summary>
+            Cancel order result
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCancelResult.Cancelled">
+            <summary>
+            Is really cancelled
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCancelResult.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCancelResult.TradeQuantity">
+            <summary>
+            Trade quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinCancelResult.Exception">
+            <summary>
+            Exception during processing
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinClientOptions">
@@ -1079,6 +1198,21 @@
         <member name="P:LiveCoin.Net.Objects.LiveCoinOrderBookEntry.Quantity">
             <summary>
             The quantity of this price in the order book
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinOrderResult">
+            <summary>
+            Order result
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinOrderResult.Added">
+            <summary>
+            Is the new order added
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinOrderResult.OrderId">
+            <summary>
+            The order Id
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinRestriction">

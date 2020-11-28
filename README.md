@@ -12,6 +12,10 @@ Implementation is build upon the CryptoExchange.Net library, make sure to also c
 Other CryptoExchange.Net implementations:
 <table>
 <tr>
+<td><a href="https://github.com/JKorf/Binance.Net"><img src="https://github.com/JKorf/Binance.Net/blob/master/Binance.Net/Icon/icon.png?raw=true"></a>
+<br />
+<a href="https://github.com/JKorf/Binance.Net">Binance</a>
+</td>
 <td><a href="https://github.com/JKorf/Bittrex.Net"><img src="https://github.com/JKorf/Bittrex.Net/blob/master/Bittrex.Net/Icon/icon.png?raw=true"></a>
 <br />
 <a href="https://github.com/JKorf/Bittrex.Net">Bittrex</a>
@@ -81,6 +85,5 @@ Examples can be found in the Examples folder.
 
 
 ## Release notes
-* Version 0.0.1 - 26 nov 2020
-    * Initial commit. Allmost empty
-
+* Version 0.0.4 - 28 nov 2020
+    * Only the REST API for Public data, Customer private data and open/cancel orders. Missing Rest deposit and withdrawal, vouchers. Also missing websockets.

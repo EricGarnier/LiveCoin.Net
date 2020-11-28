@@ -43,6 +43,8 @@ namespace LiveCoin.Net
 		private const string PaymentHistoryTransactionSiezEndpoint = "payment/history/size";
 		private const string ExchangeBuyLimitEndpoint = "exchange/buylimit";
 		private const string ExchangeSellLimitEndpoint = "exchange/selllimit";
+		private const string ExchangeBuyMarketEndpoint = "exchange/buymarket";
+		private const string ExchangeSellMarketEndpoint = "exchange/sellmarket";
 		private const string ExchangeCancelLimitEndpoint = "exchange/cancellimit";
 		private const string ExchangeClientOrdersEndpoint = "exchange/client_orders";
 		private const string ExchangeCommissionEndpoint = "exchange/commission";
@@ -262,7 +264,7 @@ namespace LiveCoin.Net
 		public WebCallResult<LiveCoinCoinInfo> GetCoinsInfo(CancellationToken ct = default) => GetCoinsInfoAsync(ct).Result;
 
 		#endregion
-		#region private data
+		#region customer private data
 		/// <summary>
 		/// Get information on your latest transactions. The return may be limited by the parameters below.
 		/// </summary>
@@ -511,6 +513,130 @@ namespace LiveCoin.Net
 		/// <param name="ct">Cancellation token</param>
 		/// <returns>actual trading fee and volume for the last 30 days in USD for customer</returns>
 		public WebCallResult<LiveCoinCommissionInfo> GetCommissionCommonInfo(CancellationToken ct = default) => GetCommissionCommonInfoAsync(ct).Result;
+		#endregion
+		#region open/cancel order
+		/// <summary>
+		/// Open a buy order (limit) for particular currency pair.
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="price">price</param>
+		/// <param name="quantity">quantity</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>order result with order id</returns>
+		public async Task<WebCallResult<LiveCoinOrderResult>> BuyLimitOrderAsync(string symbol, decimal price, decimal quantity, CancellationToken ct = default)
+		{
+			symbol.ValidateLiveCoinSymbol();
+			var parameters = new Dictionary<string, object> { { "currencyPair", symbol },
+				{"price", price },
+				{"quantity", quantity } };
+			return await SendRequest<LiveCoinOrderResult>(GetUrl(ExchangeBuyLimitEndpoint), HttpMethod.Post, ct, parameters, true).ConfigureAwait(false);
+		}
+		/// <summary>
+		/// Open a buy order (limit) for particular currency pair.
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="price">price</param>
+		/// <param name="quantity">quantity</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>order result with order id</returns>
+		public WebCallResult<LiveCoinOrderResult> BuyLimitOrder(string symbol, decimal price, decimal quantity, CancellationToken ct = default) => BuyLimitOrderAsync(symbol, price, quantity, ct).Result;
+
+		/// <summary>
+		/// Open a sell order (limit) for particular currency pair.
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="price">price</param>
+		/// <param name="quantity">quantity</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>order result with order id</returns>
+		public async Task<WebCallResult<LiveCoinOrderResult>> SellLimitOrderAsync(string symbol, decimal price, decimal quantity, CancellationToken ct = default)
+		{
+			symbol.ValidateLiveCoinSymbol();
+			var parameters = new Dictionary<string, object> { { "currencyPair", symbol },
+				{"price", price },
+				{"quantity", quantity } };
+			return await SendRequest<LiveCoinOrderResult>(GetUrl(ExchangeSellLimitEndpoint), HttpMethod.Post, ct, parameters, true).ConfigureAwait(false);
+		}
+		/// <summary>
+		/// Open a sell order (limit) for particular currency pair.
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="price">price</param>
+		/// <param name="quantity">quantity</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>order result with order id</returns>
+		public WebCallResult<LiveCoinOrderResult> SellLimitOrder(string symbol, decimal price, decimal quantity, CancellationToken ct = default) => SellLimitOrderAsync(symbol, price, quantity, ct).Result;
+
+
+		/// <summary>
+		/// Open a buy order (market) for particular currency pair.
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="quantity">quantity</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>order result with order id</returns>
+		public async Task<WebCallResult<LiveCoinOrderResult>> BuyMarketOrderAsync(string symbol, decimal quantity, CancellationToken ct = default)
+		{
+			symbol.ValidateLiveCoinSymbol();
+			var parameters = new Dictionary<string, object> { { "currencyPair", symbol },
+				{"quantity", quantity } };
+			return await SendRequest<LiveCoinOrderResult>(GetUrl(ExchangeBuyMarketEndpoint), HttpMethod.Post, ct, parameters, true).ConfigureAwait(false);
+		}
+		/// <summary>
+		/// Open a buy order (market) for particular currency pair.
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="quantity">quantity</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>order result with order id</returns>
+		public WebCallResult<LiveCoinOrderResult> BuyMarketOrder(string symbol, decimal quantity, CancellationToken ct = default) => BuyMarketOrderAsync(symbol, quantity, ct).Result;
+
+		/// <summary>
+		/// Open a sell order (market) for particular currency pair.
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="quantity">quantity</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>order result with order id</returns>
+		public async Task<WebCallResult<LiveCoinOrderResult>> SellMarketOrderAsync(string symbol, decimal quantity, CancellationToken ct = default)
+		{
+			symbol.ValidateLiveCoinSymbol();
+			var parameters = new Dictionary<string, object> { { "currencyPair", symbol },
+				{"quantity", quantity } };
+			return await SendRequest<LiveCoinOrderResult>(GetUrl(ExchangeSellMarketEndpoint), HttpMethod.Post, ct, parameters, true).ConfigureAwait(false);
+		}
+		/// <summary>
+		/// Open a sell order (market) for particular currency pair.
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="quantity">quantity</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>order result with order id</returns>
+		public WebCallResult<LiveCoinOrderResult> SellMarketOrder(string symbol, decimal quantity, CancellationToken ct = default) => SellMarketOrderAsync(symbol, quantity, ct).Result;
+
+		/// <summary>
+		/// Cancel order
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="orderId">the order id</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>cancellation request result</returns>
+		public async Task<WebCallResult<LiveCoinCancelResult>> CancelLimitOrderAsync(string symbol, long orderId, CancellationToken ct = default)
+		{
+			symbol.ValidateLiveCoinSymbol();
+			var parameters = new Dictionary<string, object> { { "currencyPair", symbol },
+				{"orderId", orderId} };
+			return await SendRequest<LiveCoinCancelResult>(GetUrl(ExchangeCancelLimitEndpoint), HttpMethod.Post, ct, parameters, true).ConfigureAwait(false);
+		}
+		/// <summary>
+		/// Cancel order
+		/// </summary>
+		/// <param name="symbol">currencyPair</param>
+		/// <param name="orderId">the order id</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns>cancellation request result</returns>
+		public WebCallResult<LiveCoinCancelResult> CancelLimitOrder(string symbol, long orderId, CancellationToken ct = default) => CancelLimitOrderAsync(symbol, orderId, ct).Result;
+
 		#endregion
 		#region helpers
 		private Uri GetUrl(string endpoint)
