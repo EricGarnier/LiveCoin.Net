@@ -27,5 +27,10 @@ namespace LiveCoin.Net
             return (long)((dateTime - new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds);
         }
 
+        internal static DateTime ToUnixMilliseconds(this long unixDateTime)
+        {
+            return new DateTime(1970, 01, 01, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(unixDateTime);
+        }
+
     }
 }

@@ -465,7 +465,7 @@ namespace LiveCoin.Net
 						stringResult.ResponseStatusCode, 
 						stringResult.ResponseHeaders,
 						0, 
-						new DeserializeError(stringResult.Data)
+						new DeserializeError($"Cannot deserialize size", stringResult.Data)
 						);
 				}
 			}

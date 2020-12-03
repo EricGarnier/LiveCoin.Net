@@ -693,6 +693,40 @@
             </summary>
             <param name="symbolString">string to validate</param>
         </member>
+        <member name="T:LiveCoin.Net.LiveCoinSocketClient">
+            <summary>
+            Client providing access to the LiveCoin websocket Api
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.#ctor">
+            <summary>
+            Create a new instance of BinanceSocketClient with default options
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.#ctor(LiveCoin.Net.Objects.LiveCoinSocketClientOptions)">
+            <summary>
+            Create a new instance of BinanceSocketClient using provided options
+            </summary>
+            <param name="options">The options to use for this client</param>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.AuthenticateSocket(CryptoExchange.Net.Sockets.SocketConnection)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.HandleQueryResponse``1(CryptoExchange.Net.Sockets.SocketConnection,System.Object,Newtonsoft.Json.Linq.JToken,CryptoExchange.Net.Objects.CallResult{``0}@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.HandleSubscriptionResponse(CryptoExchange.Net.Sockets.SocketConnection,CryptoExchange.Net.Sockets.SocketSubscription,System.Object,Newtonsoft.Json.Linq.JToken,CryptoExchange.Net.Objects.CallResult{System.Object}@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.MessageMatchesHandler(Newtonsoft.Json.Linq.JToken,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.MessageMatchesHandler(Newtonsoft.Json.Linq.JToken,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.Unsubscribe(CryptoExchange.Net.Sockets.SocketConnection,CryptoExchange.Net.Sockets.SocketSubscription)">
+            <inheritdoc/>
+        </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoin24HTicker">
             <summary>
             Price statistics of the last 24 hours
@@ -1235,6 +1269,22 @@
             minimum amount to open order
             </summary>
         </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinSocketClientOptions">
+            <summary>
+            LiveCoin socket client options
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.Objects.LiveCoinSocketClientOptions.#ctor">
+            <summary>
+            ctor
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.Objects.LiveCoinSocketClientOptions.Copy">
+            <summary>
+            Return a copy of these options
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinTrade">
             <summary>
             Detailed on a transactions for a currency pair
@@ -1324,6 +1374,37 @@
             <summary>
             Login
             </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Sockets.BinaryData.Data">
+            <summary>
+            The binary data in base64 string
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Sockets.BinaryData.Token">
+            <summary>
+            The token associate with the request
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.Sockets.BinarySocket.#ctor(CryptoExchange.Net.Logging.Log,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.Sockets.BinarySocket.#ctor(CryptoExchange.Net.Logging.Log,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.IDictionary{System.String,System.String})">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.Sockets.BinarySocket.Send(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.Sockets.BinarySocket.Connect">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.Sockets.BinarySocket.SetProxy(System.String,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.Sockets.BinarySocketFactory.CreateWebsocket(CryptoExchange.Net.Logging.Log,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.Sockets.BinarySocketFactory.CreateWebsocket(CryptoExchange.Net.Logging.Log,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.IDictionary{System.String,System.String})">
+            <inheritdoc />
         </member>
     </members>
 </doc>
