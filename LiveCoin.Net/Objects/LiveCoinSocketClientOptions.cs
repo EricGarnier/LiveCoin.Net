@@ -11,10 +11,15 @@ namespace LiveCoin.Net.Objects
 	public class LiveCoinSocketClientOptions : SocketClientOptions
 	{
         /// <summary>
+        /// Time to live for authenticate request in milliseconds
+        /// </summary>
+        public int TimeToLive { get; set; } = 1000;
+        /// <summary>
         /// ctor
         /// </summary>
-        public LiveCoinSocketClientOptions() : base("wss://ws.api.livecoin.net/ws/beta2")
+        public LiveCoinSocketClientOptions() : base(@"wss://ws.api.livecoin.net/ws/beta2")
         {
+            this.SocketSubscriptionsCombineTarget = 10;
         }
 
         /// <summary>
@@ -24,6 +29,7 @@ namespace LiveCoin.Net.Objects
         public LiveCoinSocketClientOptions Copy()
         {
             var copy = Copy<LiveCoinSocketClientOptions>();
+            copy.TimeToLive = TimeToLive;
             return copy;
         }
     }

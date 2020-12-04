@@ -10,6 +10,7 @@ using CryptoExchange.Net.Logging;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using LiveCoin.Net.Objects;
+using LiveCoin.Net.Objects.SocketObjects;
 using LiveCoin.Net.Sockets;
 using LiveCoin.Net.Test;
 using Newtonsoft.Json.Linq;
@@ -26,6 +27,8 @@ namespace LiveCoin.Net
 		#region fields
 		private static LiveCoinSocketClientOptions _defaultOptions = new LiveCoinSocketClientOptions();
 		private static LiveCoinSocketClientOptions DefaultOptions => _defaultOptions.Copy();
+		private int _timeToLive;
+
 		#endregion
 		private readonly string _baseAddress;
 		#region constructor/destructor
@@ -43,38 +46,27 @@ namespace LiveCoin.Net
 		/// <param name="options">The options to use for this client</param>
 		public LiveCoinSocketClient(LiveCoinSocketClientOptions options) : base(options, options.ApiCredentials == null ? null : new LiveCoinAuthenticationProvider(options.ApiCredentials, ArrayParametersSerialization.MultipleValues))
 		{
-			_baseAddress = options.BaseAddress;
+			_baseAddress = options.BaseAddress.TrimEnd('/');
+			_timeToLive = options.TimeToLive;
 			SocketFactory = new BinarySocketFactory();
 			ContinueOnQueryResponse = false;
 		}
 		#endregion
 
 		#region method
-
-
+		/// <inheritdoc/>
 		protected override SocketSubscription AddHandler<T>(object? request, string? identifier, bool userSubscription, SocketConnection connection, Action<T> dataHandler)
 		{
 			void InternalHandler(SocketConnection socketWrapper, JToken data)
 			{
-				//if (typeof(T) == typeof(string))
-				//{
-				//	dataHandler((T)Convert.ChangeType(data.ToString(), typeof(T)));
-				//	return;
-				//}
-				var response = GetWsMessage<TickerNotification>(data);
-
-				//var desResult = Deserialize<T>(data, false);
-				//if (!desResult)
-				if (!(response is T))
+				T response = GetWsMessage<T>(data);
+				if (response == null)
 				{
-					//					log.Write(LogVerbosity.Warning, $"Failed to deserialize data into type {typeof(T)}: {desResult.Error}");
-					log.Write(LogVerbosity.Warning, $"Failed to deserialize data into type {typeof(T)}: ???");
+					var m = GetWsResponse(data);
+					log.Write(LogVerbosity.Warning, $"Failed to deserialize data into type {typeof(T)} ResponseType:{m?.Meta?.ResponseType}, Token:{m?.Meta?.Token} Msg.Length:{m?.Msg.Length}");
 					return;
 				}
-
-				//dataHandler(desResult.Data);
-				T res = (T)Convert.ChangeType(response, typeof(T));
-				dataHandler(res);
+				dataHandler(response);
 			}
 
 			var handler = request == null
@@ -84,109 +76,116 @@ namespace LiveCoin.Net
 			return handler;
 		}
 
-		public async Task<CallResult<PongResponse>> TestPing()
+		private BinaryData BuildRequest<T>(T? request, string token, WsRequestMetaData.WsRequestMsgType requestType, bool signed) where T : class
 		{
-			//			Query
-			string token;
 			byte[] msg = new byte[0];
-			WsRequestMetaData.WsRequestMsgType requestType = WsRequestMetaData.WsRequestMsgType.PingRequest;
-			token = "Ping" + Guid.NewGuid().ToString();
 			var meta = new WsRequestMetaData()
 			{
 				RequestType = requestType,
 				Token = token
 			};
+			if (request is IExpireControl expireControl)
+			{
+				expireControl.ExpireControl = new RequestExpired
+				{
+					Now = DateTime.UtcNow,
+					Ttl = _timeToLive
+				};
+			}
+			if (request != null)
+			{
+				using (MemoryStream msgStream = new MemoryStream())
+				{
+					ProtoBuf.Serializer.Serialize(msgStream, request);
+					msg = msgStream.ToArray();
+				}
+			}
 			WsRequest wsRequest = new WsRequest()
 			{
 				Meta = meta,
 				Msg = msg
 			};
-			var request = new BinaryData();
+			if (signed)
+			{
+				wsRequest.Meta.Sign = authProvider?.Sign(wsRequest.Msg);
+			}
+			var result = new BinaryData();
 			using (var requestStream = new MemoryStream())
 			{
 				ProtoBuf.Serializer.Serialize(requestStream, wsRequest);
-				request.Data = System.Convert.ToBase64String(requestStream.ToArray());
-				request.Token = token;
-				request.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.PongResponse;
+				result.Data = System.Convert.ToBase64String(requestStream.ToArray());
 			}
-			return await Query<PongResponse>("wss://ws.api.livecoin.net/ws/beta2", request, false);
-
+			result.Token = token;
+			return result;
 		}
-		private static byte[] Serialize<T>(T value)
+		public async Task<CallResult<PongResponse>> Ping()
 		{
-			using (var requestStream = new MemoryStream())
+			var binaryRequest = BuildRequest<object>(null, nameof(Ping) + NextId().ToString(), WsRequestMetaData.WsRequestMsgType.PingRequest, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.PongResponse;
+			return await Query<PongResponse>(_baseAddress, binaryRequest, false);
+		}
+		public async Task<CallResult<CancelLimitOrderResponse>> CancelLimitOrder(string symbol, long orderId)
+		{
+			var message = new CancelLimitOrderRequest()
 			{
-				ProtoBuf.Serializer.Serialize(requestStream, value);
-				return	requestStream.ToArray();
-			}
+				CurrencyPair = symbol,
+				Id = orderId,
+			};
+			var binaryRequest = BuildRequest(message, nameof(CancelLimitOrder) + NextId().ToString(), WsRequestMetaData.WsRequestMsgType.CancelLimitOrder, true);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.CancelLimitOrderResponse;
+			return await Query<CancelLimitOrderResponse>(_baseAddress, binaryRequest, true);
 		}
-		public async Task<CallResult<UpdateSubscription>> test(string symbol)
+
+		private static bool HandleTickerNotifyMessage(BinaryData request, JToken jtoken, WsResponse header)
 		{
-			string token;
-			byte[] msg;
-			WsRequestMetaData.WsRequestMsgType requestType;
+			if (string.IsNullOrWhiteSpace(header.Meta.Token) && header.Meta.ResponseType == WsResponseMetaData.WsResponseMsgType.TickerNotify)
+			{
+				TickerNotification? tickerNotification = GetWsMessage<TickerNotification>(jtoken);
+				if (tickerNotification?.CurrencyPair == request.CurrencyPair)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		public async Task<CallResult<UpdateSubscription>> SubscribeTicker(string symbol, Action<TickerNotification> action)
+		{
 			var message = new SubscribeTickerChannelRequest
 			{
 				CurrencyPair = symbol
 			};
-			using (MemoryStream msgStream = new MemoryStream())
-			{
-				ProtoBuf.Serializer.Serialize(msgStream, message);
-				msg = msgStream.ToArray();
-				requestType = WsRequestMetaData.WsRequestMsgType.SubscribeTicker;
-				token = "Ticker_" + "BTC/USD" + " channel" + Guid.NewGuid().ToString();
-			}
-
-			var meta = new WsRequestMetaData()
-			{
-				RequestType = requestType,
-				Token = token
-			};
-
-			WsRequest wsRequest = new WsRequest()
-			{
-				Meta = meta,
-				Msg = msg
-			};
-			var request = new BinaryData();
-			using (var requestStream = new MemoryStream())
-			{
-				ProtoBuf.Serializer.Serialize(requestStream, wsRequest);
-				request.Data = System.Convert.ToBase64String(requestStream.ToArray());
-				request.Token = token;
-				request.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.TickerChannelSubscribed;
-				request.HandleMessageData = (jtoken, header) =>
-				{
-					if (string.IsNullOrWhiteSpace(header.Meta.Token) && header.Meta.ResponseType == WsResponseMetaData.WsResponseMsgType.TickerNotify)
-					{
-						TickerNotification? tickerNotification = GetWsMessage<TickerNotification>(jtoken);
-						if (tickerNotification?.CurrencyPair == symbol)
-						{
-							return true;
-						}
-					}
-					return false;
-				};
-			}
-			var t = await this.Subscribe<TickerNotification>("wss://ws.api.livecoin.net/ws/beta2", request, token, false,
-				(o) =>
-				{
-
-					Console.WriteLine($"Ticker : {o.CurrencyPair} symbol:{symbol}");
-					foreach (var t in o.Datas)
-					{
-						Console.WriteLine($"  BestAsk:{t.BestAsk} BestBid:{t.BestBid} Timestamp:{t.Timestamp}");
-					}
-				});
-			return t;
+			var binaryRequest = BuildRequest(message, nameof(SubscribeTicker) + NextId(), WsRequestMetaData.WsRequestMsgType.SubscribeTicker, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.TickerChannelSubscribed;
+			binaryRequest.ChannelType = UnsubscribeRequest.ChannelType.Ticker;
+			binaryRequest.CurrencyPair = symbol;
+			binaryRequest.HandleMessageData = HandleTickerNotifyMessage;
+			return await this.Subscribe<TickerNotification>(_baseAddress, binaryRequest, binaryRequest.Token, false, action);
 		}
 
 
 		/// <inheritdoc/>
-		protected override Task<CallResult<bool>> AuthenticateSocket(SocketConnection s)
+		protected override async Task<CallResult<bool>> AuthenticateSocket(SocketConnection s)
 		{
-			//Todo : ega : envoyer un login, et attendre la réponse.
-			throw new NotImplementedException();
+			if (authProvider == null)
+				return new CallResult<bool>(false, new NoApiCredentialsError());
+			var message = new LoginRequest
+			{
+				ApiKey = authProvider.Credentials?.Key?.GetString(),
+			};
+			var binaryRequest = BuildRequest(message, nameof(AuthenticateSocket) + NextId(), WsRequestMetaData.WsRequestMsgType.Login, true);
+			var result = new CallResult<bool>(false, new ServerError("No response from server"));
+			await s.SendAndWait(binaryRequest, ResponseTimeout, data =>
+			{
+				var response = GetWsResponse(data);
+				if (response.Meta.ResponseType == WsResponseMetaData.WsResponseMsgType.LoginResponse && response.Meta.Token == binaryRequest.Token)
+				{
+					log.Write(LogVerbosity.Debug, "Authorization completed");
+					result = new CallResult<bool>(true, null);
+					return true;
+				}
+				return false;
+			});
+			return result;
 		}
 
 		/// <inheritdoc/>
@@ -239,7 +238,7 @@ namespace LiveCoin.Net
 			};
 		}
 
-		private static object ExtendedMessageCreateValueFunction(JToken key)
+		private static object? ExtendedMessageCreateValueFunction(JToken key)
 		{
 			var response = GetWsResponse(key);
 			var msg = response.Msg;
@@ -348,7 +347,7 @@ namespace LiveCoin.Net
 		{
 			return ExtendedWsResponse.GetValue(key, ExtendedWsResponseCreateValueCallback);
 		}
-		private static T GetWsMessage<T>(JToken key) // where T : class
+		private static T GetWsMessage<T>(JToken key)  //where T : class
 		{
 			T result = default(T);
 			object r = ExtendedMessage.GetValue(key, ExtendedMessageCreateValueFunction);
@@ -358,8 +357,7 @@ namespace LiveCoin.Net
 			}
 			return result;
 		}
-		/*
-		*/
+
 		/// <inheritdoc/>
 		protected override bool HandleSubscriptionResponse(SocketConnection s, SocketSubscription subscription, object request, JToken jmessage, out CallResult<object>? callResult)
 		{
@@ -400,7 +398,7 @@ namespace LiveCoin.Net
 			}
 			else
 			{
-				return fullRequest.HandleMessageData?.Invoke(message, response) == true;
+				return fullRequest.HandleMessageData?.Invoke(fullRequest, message, response) == true;
 			}
 		}
 
@@ -414,30 +412,18 @@ namespace LiveCoin.Net
 		protected override async Task<bool> Unsubscribe(SocketConnection connection, SocketSubscription s)
 		{
 			var fullRequest = (BinaryData?)s.Request;
-			if (fullRequest == null)
+			if ( fullRequest == null || fullRequest?.ChannelType == null || fullRequest?.CurrencyPair == null)
 			{
 				return false;
 			}
-			var wsRequest = new WsRequest
+			var request = new UnsubscribeRequest
 			{
-				Meta = new WsRequestMetaData
-				{
-					RequestType = WsRequestMetaData.WsRequestMsgType.Unsubscribe,
-					Token = "unsubscribe" + Guid.NewGuid().ToString(),
-				},
-				Msg = Serialize(new UnsubscribeRequest
-				{
-					Channel_Type = UnsubscribeRequest.ChannelType.Ticker,
-					CurrencyPair = "BTC/USD"
-				})
+				Channel_Type = fullRequest.ChannelType??((UnsubscribeRequest.ChannelType)(-1)),
+				CurrencyPair = fullRequest.CurrencyPair
 			};
-			var request = new BinaryData
-			{
-				Data = System.Convert.ToBase64String(Serialize(wsRequest)),
-				ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.ChannelUnsubscribed,
-				Token = wsRequest.Meta.Token,
-			};
-			var res = await QueryAndWait<ChannelUnsubscribedResponse>(connection, request);
+			var binaryRequest = BuildRequest(request, nameof(Unsubscribe) + NextId().ToString(), WsRequestMetaData.WsRequestMsgType.Unsubscribe, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.ChannelUnsubscribed;
+			var res = await QueryAndWait<ChannelUnsubscribedResponse>(connection, binaryRequest);
 			return res.Success;
 		}
 		#endregion

@@ -5,7 +5,7 @@ using System.Text;
 namespace LiveCoin.Net.Test
 {
 	[global::ProtoBuf.ProtoContract()]
-	class TickerNotification
+	public class TickerNotification
 	{
 		[global::ProtoBuf.ProtoMember(1)]
 		public string CurrencyPair { get; set; }

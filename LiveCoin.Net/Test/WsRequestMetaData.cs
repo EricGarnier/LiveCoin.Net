@@ -14,7 +14,7 @@ namespace LiveCoin.Net.Test
         public string Token { get; set; } = string.Empty;
 
         [global::ProtoBuf.ProtoMember(4)]
-        public byte[] Sign { get; set; }
+        public byte[]? Sign { get; set; }
 
         [global::ProtoBuf.ProtoContract()]
         public enum WsRequestMsgType

@@ -709,6 +709,9 @@
             </summary>
             <param name="options">The options to use for this client</param>
         </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.AddHandler``1(System.Object,System.String,System.Boolean,CryptoExchange.Net.Sockets.SocketConnection,System.Action{``0})">
+            <inheritdoc/>
+        </member>
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.AuthenticateSocket(CryptoExchange.Net.Sockets.SocketConnection)">
             <inheritdoc/>
         </member>
@@ -1274,6 +1277,11 @@
             LiveCoin socket client options
             </summary>
         </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinSocketClientOptions.TimeToLive">
+            <summary>
+            Time to live for authenticate request in milliseconds
+            </summary>
+        </member>
         <member name="M:LiveCoin.Net.Objects.LiveCoinSocketClientOptions.#ctor">
             <summary>
             ctor
@@ -1375,6 +1383,36 @@
             Login
             </summary>
         </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.CancelLimitOrderRequest">
+            <summary>
+            Weight is 1 point
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.CancelLimitOrderResponse">
+            <summary>
+            CANCEL_LIMIT_ORDER_RESPONSE
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.CancelLimitOrderResponse.OrderId">
+            <summary>
+            Order id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.CancelLimitOrderResponse.AmountLeft">
+            <summary>
+            quantity not traded yet. Never can be zero :)
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.RequestExpired.Now">
+            <summary>
+            current Epoch timestamp
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.RequestExpired.Ttl">
+            <summary>
+            'Time to live' milliseconds
+            </summary>
+        </member>
         <member name="P:LiveCoin.Net.Sockets.BinaryData.Data">
             <summary>
             The binary data in base64 string
@@ -1383,6 +1421,16 @@
         <member name="P:LiveCoin.Net.Sockets.BinaryData.Token">
             <summary>
             The token associate with the request
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Sockets.BinaryData.CurrencyPair">
+            <summary>
+            For subscription only
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Sockets.BinaryData.ChannelType">
+            <summary>
+            For subscription only
             </summary>
         </member>
         <member name="M:LiveCoin.Net.Sockets.BinarySocket.#ctor(CryptoExchange.Net.Logging.Log,System.String)">

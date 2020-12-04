@@ -21,6 +21,16 @@ namespace LiveCoin.Net.Sockets
 		[JsonIgnore]
 		internal WsResponseMetaData.WsResponseMsgType ExpectedResponseMsgType { get; set; }
 		[JsonIgnore]
-		internal Func<JToken, WsResponse, bool> HandleMessageData;
+		internal Func<BinaryData, JToken, WsResponse, bool>? HandleMessageData;
+		/// <summary>
+		/// For subscription only
+		/// </summary>
+		[JsonIgnore]
+		internal string? CurrencyPair { get; set; }
+		/// <summary>
+		/// For subscription only
+		/// </summary>
+		[JsonIgnore]
+		internal UnsubscribeRequest.ChannelType? ChannelType { get; set; }
 	}
 }

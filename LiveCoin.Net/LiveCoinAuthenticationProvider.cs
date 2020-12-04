@@ -40,7 +40,12 @@ namespace LiveCoin.Net
 		{
 			throw new NotImplementedException();
 		}
-
+		public override byte[] Sign(byte[] toSign)
+		{
+			if (Credentials.Key == null)
+				throw new ArgumentException("No valid API credentials provided. Key/Secret needed.");
+			return encryptor.ComputeHash(toSign);
+		}
 		/// <summary>
 		/// Create a query string of the specified parameters
 		/// </summary>
