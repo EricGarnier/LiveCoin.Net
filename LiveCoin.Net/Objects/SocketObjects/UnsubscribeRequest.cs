@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LiveCoin.Net.Test
+namespace LiveCoin.Net.Objects.SocketObjects
 {
     [global::ProtoBuf.ProtoContract()]
-    class ErrorResponse
+	internal class UnsubscribeRequest
 	{
         [global::ProtoBuf.ProtoMember(1)]
-        public int Code { get; set; }
+        public ChannelType ChannelType { get; set; } = ChannelType.Ticker;
 
         [global::ProtoBuf.ProtoMember(2)]
-        public string? Message { get; set; }
+        public string? CurrencyPair { get; set; }
 
     }
 }

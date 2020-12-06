@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LiveCoin.Net.Test
+namespace LiveCoin.Net.Objects.SocketObjects
 {
 	[global::ProtoBuf.ProtoContract()]
-	class WsResponse
+	internal class WsRequest
 	{
 		[global::ProtoBuf.ProtoMember(1)]
-		public WsResponseMetaData Meta { get; set; }
+		public WsRequestMetaData? Meta { get; set; }
 
 		[global::ProtoBuf.ProtoMember(2)]
-		public byte[] Msg { get; set; }
-
+		public byte[]? Msg { get; set; }
 	}
 }

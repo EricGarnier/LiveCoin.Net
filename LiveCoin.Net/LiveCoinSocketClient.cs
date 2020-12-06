@@ -12,7 +12,6 @@ using CryptoExchange.Net.Sockets;
 using LiveCoin.Net.Objects;
 using LiveCoin.Net.Objects.SocketObjects;
 using LiveCoin.Net.Sockets;
-using LiveCoin.Net.Test;
 using Newtonsoft.Json.Linq;
 using ProtoBuf;
 using ProtoBuf.Meta;
@@ -44,7 +43,7 @@ namespace LiveCoin.Net
 		/// Create a new instance of BinanceSocketClient using provided options
 		/// </summary>
 		/// <param name="options">The options to use for this client</param>
-		public LiveCoinSocketClient(LiveCoinSocketClientOptions options) : base(options, options.ApiCredentials == null ? null : new LiveCoinAuthenticationProvider(options.ApiCredentials, ArrayParametersSerialization.MultipleValues))
+		public LiveCoinSocketClient(LiveCoinSocketClientOptions options) : base(options, options.ApiCredentials == null ? null : new LiveCoinAuthenticationProvider(options.ApiCredentials))
 		{
 			_baseAddress = options.BaseAddress.TrimEnd('/');
 			_timeToLive = options.TimeToLive;
@@ -63,7 +62,7 @@ namespace LiveCoin.Net
 				if (response == null)
 				{
 					var m = GetWsResponse(data);
-					log.Write(LogVerbosity.Warning, $"Failed to deserialize data into type {typeof(T)} ResponseType:{m?.Meta?.ResponseType}, Token:{m?.Meta?.Token} Msg.Length:{m?.Msg.Length}");
+					log.Write(LogVerbosity.Warning, $"Failed to deserialize data into type {typeof(T)} ResponseType:{m?.Meta?.ResponseType}, Token:{m?.Meta?.Token} Msg.Length:{m?.Msg?.Length}");
 					return;
 				}
 				dataHandler(response);
@@ -76,7 +75,7 @@ namespace LiveCoin.Net
 			return handler;
 		}
 
-		private BinaryData BuildRequest<T>(T? request, string token, WsRequestMetaData.WsRequestMsgType requestType, bool signed) where T : class
+		private BinaryData BuildRequest<T>(T? request, string token, WsRequestMsgType requestType, bool signed) where T : class
 		{
 			byte[] msg = new byte[0];
 			var meta = new WsRequestMetaData()
@@ -118,12 +117,79 @@ namespace LiveCoin.Net
 			result.Token = token;
 			return result;
 		}
+
+		private async Task<CallResult<UpdateSubscription<V>>> Subscribe<T, V>(BinaryData request, bool authenticated, Action<T> dataHandler) where T : class where V : class
+		{
+			SocketConnection socket;
+			SocketSubscription handler;
+			var released = false;
+			var identifier = request.Token;
+			var url = _baseAddress;
+			await semaphoreSlim.WaitAsync().ConfigureAwait(false);
+			try
+			{
+				socket = GetWebsocket(url, authenticated);
+				handler = AddHandler(request, identifier, true, socket, dataHandler);
+				if (SocketCombineTarget == 1)
+				{
+					// Can release early when only a single sub per connection
+					semaphoreSlim.Release();
+					released = true;
+				}
+
+				var connectResult = await ConnectIfNeeded(socket, authenticated).ConfigureAwait(false);
+				if (!connectResult)
+					return new CallResult<UpdateSubscription<V>>(null, connectResult.Error);
+			}
+			finally
+			{
+				//When the task is ready, release the semaphore. It is vital to ALWAYS release the semaphore when we are ready, or else we will end up with a Semaphore that is forever locked.
+				//This is why it is important to do the Release within a try...finally clause; program execution may crash or take a different path, this way you are guaranteed execution
+				if (!released)
+					semaphoreSlim.Release();
+			}
+
+			if (socket.PausedActivity)
+			{
+				log.Write(LogVerbosity.Info, "Socket has been paused, can't subscribe at this moment");
+				return new CallResult<UpdateSubscription<V>>(default, new ServerError("Socket is paused"));
+			}
+
+			if (request != null)
+			{
+				var subResult = await SubscribeAndWait(socket, request, handler).ConfigureAwait(false);
+				if (!subResult)
+				{
+					await socket.Close(handler).ConfigureAwait(false);
+					return new CallResult<UpdateSubscription<V>>(null, subResult.Error);
+				}
+			}
+			else
+			{
+				handler.Confirmed = true;
+			}
+
+			socket.ShouldReconnect = true;
+			return new CallResult<UpdateSubscription<V>>(new UpdateSubscription<V>(socket, handler, DecodeMessage<V>(request?.Msg)), null);
+		}
+
+
+		/// <summary>
+		/// Ping command
+		/// </summary>
+		/// <returns>Pong response from the server</returns>
 		public async Task<CallResult<PongResponse>> Ping()
 		{
-			var binaryRequest = BuildRequest<object>(null, nameof(Ping) + NextId().ToString(), WsRequestMetaData.WsRequestMsgType.PingRequest, false);
-			binaryRequest.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.PongResponse;
+			var binaryRequest = BuildRequest<object>(null, nameof(Ping) + NextId().ToString(), WsRequestMsgType.PingRequest, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.PongResponse;
 			return await Query<PongResponse>(_baseAddress, binaryRequest, false);
 		}
+		/// <summary>
+		/// Cancel limit order
+		/// </summary>
+		/// <param name="symbol">currency pair</param>
+		/// <param name="orderId">id of the order to cancel</param>
+		/// <returns></returns>
 		public async Task<CallResult<CancelLimitOrderResponse>> CancelLimitOrder(string symbol, long orderId)
 		{
 			var message = new CancelLimitOrderRequest()
@@ -131,14 +197,14 @@ namespace LiveCoin.Net
 				CurrencyPair = symbol,
 				Id = orderId,
 			};
-			var binaryRequest = BuildRequest(message, nameof(CancelLimitOrder) + NextId().ToString(), WsRequestMetaData.WsRequestMsgType.CancelLimitOrder, true);
-			binaryRequest.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.CancelLimitOrderResponse;
+			var binaryRequest = BuildRequest(message, nameof(CancelLimitOrder) + NextId().ToString(), WsRequestMsgType.CancelLimitOrder, true);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.CancelLimitOrderResponse;
 			return await Query<CancelLimitOrderResponse>(_baseAddress, binaryRequest, true);
 		}
 
 		private static bool HandleTickerNotifyMessage(BinaryData request, JToken jtoken, WsResponse header)
 		{
-			if (string.IsNullOrWhiteSpace(header.Meta.Token) && header.Meta.ResponseType == WsResponseMetaData.WsResponseMsgType.TickerNotify)
+			if (string.IsNullOrWhiteSpace(header.Meta?.Token) && header?.Meta?.ResponseType == WsResponseMsgType.TickerNotify)
 			{
 				TickerNotification? tickerNotification = GetWsMessage<TickerNotification>(jtoken);
 				if (tickerNotification?.CurrencyPair == request.CurrencyPair)
@@ -148,20 +214,179 @@ namespace LiveCoin.Net
 			}
 			return false;
 		}
-		public async Task<CallResult<UpdateSubscription>> SubscribeTicker(string symbol, Action<TickerNotification> action)
+
+		/// <summary>
+		/// Subscribe to ticker notification
+		/// </summary>
+		/// <param name="symbol">Currency pair</param>
+		/// <param name="frequency">send rate will be limited to one message per frequency seconds. Minimum frequency is 0.1
+		/// if omitted, rate is not limited (you will get all changes just in time)
+		/// </param>
+		/// <param name="action">ticker processing</param>
+		/// <returns>subscription result</returns>
+		public async Task<CallResult<UpdateSubscription<TickerChannelSubscribedResponse>>> SubscribeTicker(string symbol, float? frequency, Action<TickerNotification> action)
 		{
 			var message = new SubscribeTickerChannelRequest
 			{
-				CurrencyPair = symbol
+				CurrencyPair = symbol,
+				Frequency = frequency
 			};
-			var binaryRequest = BuildRequest(message, nameof(SubscribeTicker) + NextId(), WsRequestMetaData.WsRequestMsgType.SubscribeTicker, false);
-			binaryRequest.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.TickerChannelSubscribed;
-			binaryRequest.ChannelType = UnsubscribeRequest.ChannelType.Ticker;
+			var binaryRequest = BuildRequest(message, nameof(SubscribeTicker) + NextId(), WsRequestMsgType.SubscribeTicker, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.TickerChannelSubscribed;
+			binaryRequest.ChannelType = ChannelType.Ticker;
 			binaryRequest.CurrencyPair = symbol;
 			binaryRequest.HandleMessageData = HandleTickerNotifyMessage;
-			return await this.Subscribe<TickerNotification>(_baseAddress, binaryRequest, binaryRequest.Token, false, action);
+			return await this.Subscribe<TickerNotification, TickerChannelSubscribedResponse>(binaryRequest, false, action);
 		}
 
+
+		private static bool HandleOrderBookRawNotificationMessage(BinaryData request, JToken jtoken, WsResponse header)
+		{
+			if (string.IsNullOrWhiteSpace(header?.Meta?.Token) && header?.Meta?.ResponseType == WsResponseMsgType.OrderBookRawNotify)
+			{
+				OrderBookRawNotification? orderBookNotification = GetWsMessage<OrderBookRawNotification>(jtoken);
+				if (orderBookNotification?.CurrencyPair == request.CurrencyPair)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Subscribe to orderbook raw notification
+		/// </summary>
+		/// <param name="symbol">the currency pair</param>
+		/// <param name="depth">depth of orderbook, which will be sent in an subscription answer
+		///  0 meens 'do not send orderbook snapshot'
+		///  if omitted, full orderbook snaphot will be sent
+		/// </param>
+		/// <param name="action">orderbook raw notification processing</param>
+		/// <returns>subscription result</returns>
+		public async Task<CallResult<UpdateSubscription<OrderBookRawChannelSubscribedResponse>>> SubscribeOrderBookRaw(string symbol, int? depth, Action<OrderBookRawNotification> action)
+		{
+			var message = new SubscribeOrderBookChannelRequest
+			{
+				CurrencyPair = symbol,
+				Depth = depth
+			};
+			var binaryRequest = BuildRequest(message, nameof(SubscribeOrderBookRaw) + NextId(), WsRequestMsgType.SubscribeOrderBookRaw, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.OrderBookRawChannelSubscribed;
+			binaryRequest.ChannelType = ChannelType.OrderBookRaw;
+			binaryRequest.CurrencyPair = symbol;
+			binaryRequest.HandleMessageData = HandleOrderBookRawNotificationMessage;
+			return await this.Subscribe<OrderBookRawNotification, OrderBookRawChannelSubscribedResponse>(binaryRequest, false, action);
+		}
+
+		private static bool HandleOrderBookNotificationMessage(BinaryData request, JToken jtoken, WsResponse header)
+		{
+			if (string.IsNullOrWhiteSpace(header?.Meta?.Token) && header?.Meta?.ResponseType == WsResponseMsgType.OrderBookNotify)
+			{
+				OrderBookNotification? orderBookNotification = GetWsMessage<OrderBookNotification>(jtoken);
+				if (orderBookNotification?.CurrencyPair == request.CurrencyPair)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Subscribe to orderbook notification
+		/// </summary>
+		/// <param name="symbol">the currency pair</param>
+		/// <param name="depth">depth of orderbook, which will be sent in an subscription answer
+		///  0 meens 'do not send orderbook snapshot'
+		///  if omitted, full orderbook snaphot will be sent
+		/// </param>
+		/// <param name="action">orderbook notification processing</param>
+		/// <returns>subscription result</returns>
+		public async Task<CallResult<UpdateSubscription<OrderBookChannelSubscribedResponse>>> SubscribeOrderBook(string symbol, int? depth, Action<OrderBookNotification> action)
+		{
+			var message = new SubscribeOrderBookChannelRequest
+			{
+				CurrencyPair = symbol,
+				Depth = depth
+			};
+			var binaryRequest = BuildRequest(message, nameof(SubscribeOrderBook) + NextId(), WsRequestMsgType.SubscribeOrderBook, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.OrderBookChannelSubscribed;
+			binaryRequest.ChannelType = ChannelType.OrderBook;
+			binaryRequest.CurrencyPair = symbol;
+			binaryRequest.HandleMessageData = HandleOrderBookNotificationMessage;
+			return await this.Subscribe<OrderBookNotification, OrderBookChannelSubscribedResponse>(binaryRequest, false, action);
+		}
+
+		private static bool HandleTradeNotificationMessage(BinaryData request, JToken jtoken, WsResponse header)
+		{
+			if (string.IsNullOrWhiteSpace(header?.Meta?.Token) && header?.Meta?.ResponseType == WsResponseMsgType.TradeNotify)
+			{
+				TradeNotification? notification = GetWsMessage<TradeNotification>(jtoken);
+				if (notification?.CurrencyPair == request.CurrencyPair)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Subscribe to trade notification
+		/// </summary>
+		/// <param name="symbol">the currency pair</param>
+		/// <param name="action">trade notification processing</param>
+		/// <returns>subscription result</returns>
+		public async Task<CallResult<UpdateSubscription<TradeChannelSubscribedResponse>>> SubscribeTrade(string symbol, Action<TradeNotification> action)
+		{
+			var message = new SubscribeTradeChannelRequest
+			{
+				CurrencyPair = symbol,
+			};
+			var binaryRequest = BuildRequest(message, nameof(SubscribeTrade) + NextId(), WsRequestMsgType.SubscribeTrade, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.TradeChannelSubscribed;
+			binaryRequest.ChannelType = ChannelType.Trade;
+			binaryRequest.CurrencyPair = symbol;
+			binaryRequest.HandleMessageData = HandleTradeNotificationMessage;
+			return await this.Subscribe<TradeNotification, TradeChannelSubscribedResponse>(binaryRequest, false, action);
+		}
+
+		private static bool HandleCandleNotificationMessage(BinaryData request, JToken jtoken, WsResponse header)
+		{
+			if (string.IsNullOrWhiteSpace(header?.Meta?.Token) && header?.Meta?.ResponseType == WsResponseMsgType.CandleNotify)
+			{
+				CandleNotification? notification = GetWsMessage<CandleNotification>(jtoken);
+				if (notification?.CurrencyPair == request.CurrencyPair)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Subscribe to candles (OHLCV) - public api
+		/// </summary>
+		/// <param name="symbol">the currency pair</param>
+		/// <param name="candleInterval">candle interval</param>
+		/// <param name="depth">amount of historical candles to send in answer, 240 is maximum value
+		/// default is not to send historical candles at all
+		/// </param>
+		/// <param name="action">trade notification processing</param>
+		/// <returns>subscription result</returns>
+		public async Task<CallResult<UpdateSubscription<CandleNotification>>> SubscribeCandle(string symbol, CandleInterval candleInterval, int? depth, Action<CandleNotification> action)
+		{
+			var message = new SubscribeCandleChannelRequest
+			{
+				CurrencyPair = symbol,
+				Interval = candleInterval,
+				Depth = depth
+			};
+			var binaryRequest = BuildRequest(message, nameof(SubscribeTrade) + NextId(), WsRequestMsgType.SubscribeCandle, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.CandleChannelSubscribed;
+			binaryRequest.ChannelType = ChannelType.Candle;
+			binaryRequest.CurrencyPair = symbol;
+			binaryRequest.HandleMessageData = HandleCandleNotificationMessage;
+			return await this.Subscribe<CandleNotification, CandleNotification>(binaryRequest, false, action);
+		}
 
 		/// <inheritdoc/>
 		protected override async Task<CallResult<bool>> AuthenticateSocket(SocketConnection s)
@@ -172,15 +397,22 @@ namespace LiveCoin.Net
 			{
 				ApiKey = authProvider.Credentials?.Key?.GetString(),
 			};
-			var binaryRequest = BuildRequest(message, nameof(AuthenticateSocket) + NextId(), WsRequestMetaData.WsRequestMsgType.Login, true);
+			var binaryRequest = BuildRequest(message, nameof(AuthenticateSocket) + NextId(), WsRequestMsgType.Login, true);
 			var result = new CallResult<bool>(false, new ServerError("No response from server"));
 			await s.SendAndWait(binaryRequest, ResponseTimeout, data =>
 			{
 				var response = GetWsResponse(data);
-				if (response.Meta.ResponseType == WsResponseMetaData.WsResponseMsgType.LoginResponse && response.Meta.Token == binaryRequest.Token)
+				if (response?.Meta?.ResponseType == WsResponseMsgType.LoginResponse && response.Meta.Token == binaryRequest.Token)
 				{
 					log.Write(LogVerbosity.Debug, "Authorization completed");
 					result = new CallResult<bool>(true, null);
+					return true;
+				}
+				if (response?.Meta?.ResponseType == WsResponseMsgType.Error && response.Meta.Token == binaryRequest.Token)
+				{
+					var error = GetWsMessage<ErrorResponse>(data);
+					log.Write(LogVerbosity.Debug, "Authorization failed");
+					result = new CallResult<bool>(false, new ServerError(error?.Code ?? -1, error?.Message ?? "Unknwon server error"));
 					return true;
 				}
 				return false;
@@ -193,14 +425,14 @@ namespace LiveCoin.Net
 		{
 			var response = GetWsResponse(data);
 			var fullRequest = (BinaryData)request;
-			if (response.Meta.Token == ((BinaryData)request).Token)
+			if (response?.Meta?.Token == fullRequest.Token)
 			{
-				if (response.Meta.ResponseType == fullRequest.ExpectedResponseMsgType)
+				if (response?.Meta?.ResponseType == fullRequest.ExpectedResponseMsgType)
 				{
 					callResult = new CallResult<T>(GetWsMessage<T>(data), null);
 					return true;
 				}
-				else if (response.Meta.ResponseType == WsResponseMetaData.WsResponseMsgType.Error)
+				else if (response?.Meta?.ResponseType == WsResponseMsgType.Error)
 				{
 					var error = GetWsMessage<ErrorResponse>(data);
 					if (error != null)
@@ -209,7 +441,7 @@ namespace LiveCoin.Net
 						return true;
 					}
 				}
-				callResult = new CallResult<T>(default(T), new ServerError(-1, $"Unknown message type received {response.Meta.ResponseType}"));
+				callResult = new CallResult<T>(default(T), new ServerError(-1, $"Unknown message type received {response?.Meta?.ResponseType}"));
 				return true;
 
 			}
@@ -217,7 +449,6 @@ namespace LiveCoin.Net
 			return false;
 		}
 		static ConditionalWeakTable<JToken, WsResponse> ExtendedWsResponse = new ConditionalWeakTable<JToken, WsResponse>();
-		static ConditionalWeakTable<JToken, WsResponse>.CreateValueCallback ExtendedWsResponseCreateValueCallback = new ConditionalWeakTable<JToken, WsResponse>.CreateValueCallback(ExtendedWsResponseCreateValueFunction);
 		private static WsResponse ExtendedWsResponseCreateValueFunction(JToken key)
 		{
 			var strData = key.Value<string>("Data");
@@ -227,10 +458,11 @@ namespace LiveCoin.Net
 				return response;
 			};
 		}
-		static ConditionalWeakTable<JToken, Object> ExtendedMessage = new ConditionalWeakTable<JToken, object>();
-		static ConditionalWeakTable<JToken, Object>.CreateValueCallback ExtendedWsMessageCreateValueCallback = new ConditionalWeakTable<JToken, Object>.CreateValueCallback(ExtendedMessageCreateValueFunction);
-		private static T DecodeMessage<T>(byte[] msg)
+		static readonly ConditionalWeakTable<JToken, Object?> ExtendedMessage = new ConditionalWeakTable<JToken, object?>();
+		private static T? DecodeMessage<T>(byte[]? msg) where T : class
 		{
+			if (msg == null || msg.Length == 0)
+				return null;
 			using (MemoryStream responseStream = new MemoryStream(msg))
 			{
 				T response = ProtoBuf.Serializer.Deserialize<T>(responseStream);
@@ -242,101 +474,101 @@ namespace LiveCoin.Net
 		{
 			var response = GetWsResponse(key);
 			var msg = response.Msg;
-			switch (response.Meta.ResponseType)
+			switch (response?.Meta?.ResponseType)
 			{
-				case WsResponseMetaData.WsResponseMsgType.TickerChannelSubscribed:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.OrderBookRawChannelSubscribed:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.OrderBookChannelSubscribed:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.TradeChannelSubscribed:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.CandleChannelSubscribed:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.ChannelUnsubscribed:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.Error:
+				case WsResponseMsgType.TickerChannelSubscribed:
+					return DecodeMessage<TickerChannelSubscribedResponse>(msg);
+				case WsResponseMsgType.OrderBookRawChannelSubscribed:
+					return DecodeMessage<OrderBookRawChannelSubscribedResponse>(msg);
+				case WsResponseMsgType.OrderBookChannelSubscribed:
+					return DecodeMessage<OrderBookChannelSubscribedResponse>(msg);
+				case WsResponseMsgType.TradeChannelSubscribed:
+					return DecodeMessage<TradeChannelSubscribedResponse>(msg);
+				case WsResponseMsgType.CandleChannelSubscribed:
+					return DecodeMessage<CandleNotification>(msg);
+				case WsResponseMsgType.ChannelUnsubscribed:
+					return DecodeMessage<ChannelUnsubscribedResponse>(msg);
+				case WsResponseMsgType.Error:
 					return DecodeMessage<ErrorResponse>(msg);
-				case WsResponseMetaData.WsResponseMsgType.TickerNotify:
+				case WsResponseMsgType.TickerNotify:
 					return DecodeMessage<TickerNotification>(msg);
-				case WsResponseMetaData.WsResponseMsgType.OrderBookRawNotify:
+				case WsResponseMsgType.OrderBookRawNotify:
+					return DecodeMessage<OrderBookRawNotification>(msg);
+				case WsResponseMsgType.OrderBookNotify:
+					return DecodeMessage<OrderBookNotification>(msg);
+				case WsResponseMsgType.TradeNotify:
+					return DecodeMessage<TradeNotification>(msg);
+				case WsResponseMsgType.CandleNotify:
+					return DecodeMessage<CandleNotification>(msg);
+				case WsResponseMsgType.LoginResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.OrderBookNotify:
+				case WsResponseMsgType.PutLimitOrderResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.TradeNotify:
+				case WsResponseMsgType.CancelLimitOrderResponse:
+					return DecodeMessage<CancelLimitOrderResponse>(msg);
+				case WsResponseMsgType.BalanceResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.CandleNotify:
+				case WsResponseMsgType.BalancesResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.LoginResponse:
+				case WsResponseMsgType.LastTradesResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.PutLimitOrderResponse:
+				case WsResponseMsgType.TradesResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.CancelLimitOrderResponse:
+				case WsResponseMsgType.ClientOrdersResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.BalanceResponse:
+				case WsResponseMsgType.ClientOrderResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.BalancesResponse:
+				case WsResponseMsgType.CommissionResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.LastTradesResponse:
+				case WsResponseMsgType.CommissionCommonInfoResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.TradesResponse:
+				case WsResponseMsgType.TradeHistoryResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.ClientOrdersResponse:
+				case WsResponseMsgType.MarketOrderResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.ClientOrderResponse:
+				case WsResponseMsgType.WalletAddressResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.CommissionResponse:
+				case WsResponseMsgType.WithdrawalCoinResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.CommissionCommonInfoResponse:
+				case WsResponseMsgType.WithdrawalPayeerResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.TradeHistoryResponse:
+				case WsResponseMsgType.WithdrawalCapitalistResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.MarketOrderResponse:
+				case WsResponseMsgType.WithdrawalAdvcashResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WalletAddressResponse:
+				case WsResponseMsgType.PrivateOrderRawChannelSubscribed:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalCoinResponse:
+				case WsResponseMsgType.PrivateTradeChannelSubscribed:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalPayeerResponse:
+				case WsResponseMsgType.PrivateOrderRawNotify:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalCapitalistResponse:
+				case WsResponseMsgType.PrivateTradeNotify:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalAdvcashResponse:
+				case WsResponseMsgType.PrivateChannelUnsubscribed:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.PrivateOrderRawChannelSubscribed:
+				case WsResponseMsgType.WithdrawalYandexResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.PrivateTradeChannelSubscribed:
+				case WsResponseMsgType.WithdrawalQiwiResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.PrivateOrderRawNotify:
+				case WsResponseMsgType.WithdrawalCardResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.PrivateTradeNotify:
+				case WsResponseMsgType.WithdrawalMastercardResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.PrivateChannelUnsubscribed:
+				case WsResponseMsgType.WithdrawalPerfectmoneyResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalYandexResponse:
+				case WsResponseMsgType.VoucherMakeResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalQiwiResponse:
+				case WsResponseMsgType.VoucherAmountResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalCardResponse:
+				case WsResponseMsgType.VoucherRedeemResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalMastercardResponse:
+				case WsResponseMsgType.CancelOrdersResponse:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.WithdrawalPerfectmoneyResponse:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.VoucherMakeResponse:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.VoucherAmountResponse:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.VoucherRedeemResponse:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.CancelOrdersResponse:
-					break;
-				case WsResponseMetaData.WsResponseMsgType.PongResponse:
+				case WsResponseMsgType.PongResponse:
 					return DecodeMessage<PongResponse>(msg);
-				case WsResponseMetaData.WsResponseMsgType.BalanceChangeChannelSubscribed:
+				case WsResponseMsgType.BalanceChangeChannelSubscribed:
 					break;
-				case WsResponseMetaData.WsResponseMsgType.BalanceChangeNotify:
+				case WsResponseMsgType.BalanceChangeNotify:
 					break;
 				default:
 					break;
@@ -345,12 +577,12 @@ namespace LiveCoin.Net
 		}
 		private static WsResponse GetWsResponse(JToken key)
 		{
-			return ExtendedWsResponse.GetValue(key, ExtendedWsResponseCreateValueCallback);
+			return ExtendedWsResponse.GetValue(key, ExtendedWsResponseCreateValueFunction);
 		}
 		private static T GetWsMessage<T>(JToken key)  //where T : class
 		{
 			T result = default(T);
-			object r = ExtendedMessage.GetValue(key, ExtendedMessageCreateValueFunction);
+			object? r = ExtendedMessage.GetValue(key, ExtendedMessageCreateValueFunction);
 			if (r != null && typeof(T).IsAssignableFrom(r.GetType()))
 			{
 				result = (T)r;
@@ -363,14 +595,15 @@ namespace LiveCoin.Net
 		{
 			var response = GetWsResponse(jmessage);
 			var fullRequest = (BinaryData)request;
-			if (response.Meta.Token == ((BinaryData)request).Token)
+			if (response?.Meta?.Token == ((BinaryData)request).Token)
 			{
-				if (response.Meta.ResponseType == fullRequest.ExpectedResponseMsgType)
+				if (response?.Meta?.ResponseType == fullRequest.ExpectedResponseMsgType)
 				{
 					callResult = new CallResult<object>(true, null);
+					fullRequest.Msg = response.Msg;
 					return true;
 				}
-				else if (response.Meta.ResponseType == WsResponseMetaData.WsResponseMsgType.Error)
+				else if (response?.Meta?.ResponseType == WsResponseMsgType.Error)
 				{
 					var error = GetWsMessage<ErrorResponse>(jmessage);
 					if (error != null)
@@ -379,7 +612,7 @@ namespace LiveCoin.Net
 						return true;
 					}
 				}
-				callResult = new CallResult<object>(false, new ServerError(-1, $"Unknown message type received {response.Meta.ResponseType}"));
+				callResult = new CallResult<object>(false, new ServerError(-1, $"Unknown message type received {response?.Meta?.ResponseType}"));
 				return true;
 
 			}
@@ -392,7 +625,11 @@ namespace LiveCoin.Net
 		{
 			var response = GetWsResponse(message);
 			var fullRequest = (BinaryData)request;
-			if (!string.IsNullOrEmpty(response.Meta.Token))
+			if (!string.IsNullOrEmpty(response?.Meta?.Token))
+			{
+				return false;
+			}
+			else if (response == null)
 			{
 				return false;
 			}
@@ -412,17 +649,17 @@ namespace LiveCoin.Net
 		protected override async Task<bool> Unsubscribe(SocketConnection connection, SocketSubscription s)
 		{
 			var fullRequest = (BinaryData?)s.Request;
-			if ( fullRequest == null || fullRequest?.ChannelType == null || fullRequest?.CurrencyPair == null)
+			if (fullRequest == null || fullRequest?.ChannelType == null || fullRequest?.CurrencyPair == null)
 			{
 				return false;
 			}
 			var request = new UnsubscribeRequest
 			{
-				Channel_Type = fullRequest.ChannelType??((UnsubscribeRequest.ChannelType)(-1)),
+				ChannelType = fullRequest.ChannelType ?? ((ChannelType)(-1)),
 				CurrencyPair = fullRequest.CurrencyPair
 			};
-			var binaryRequest = BuildRequest(request, nameof(Unsubscribe) + NextId().ToString(), WsRequestMetaData.WsRequestMsgType.Unsubscribe, false);
-			binaryRequest.ExpectedResponseMsgType = WsResponseMetaData.WsResponseMsgType.ChannelUnsubscribed;
+			var binaryRequest = BuildRequest(request, nameof(Unsubscribe) + NextId().ToString(), WsRequestMsgType.Unsubscribe, false);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.ChannelUnsubscribed;
 			var res = await QueryAndWait<ChannelUnsubscribedResponse>(connection, binaryRequest);
 			return res.Success;
 		}

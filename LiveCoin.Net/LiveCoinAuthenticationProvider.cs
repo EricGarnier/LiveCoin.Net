@@ -13,15 +13,13 @@ namespace LiveCoin.Net
 	internal class LiveCoinAuthenticationProvider : AuthenticationProvider
 	{
 		private readonly HMACSHA256 encryptor;
-		private readonly ArrayParametersSerialization arraySerialization;
 
-		public LiveCoinAuthenticationProvider(ApiCredentials apiCredentials, ArrayParametersSerialization multipleValues) : base(apiCredentials)
+		public LiveCoinAuthenticationProvider(ApiCredentials apiCredentials) : base(apiCredentials)
 		{
 			if (apiCredentials.Secret == null)
 				throw new ArgumentException("No valid API credentials provided. Key/Secret needed.");
 
 			encryptor = new HMACSHA256(Encoding.ASCII.GetBytes(apiCredentials.Secret.GetString()));
-			this.arraySerialization = multipleValues;
 		}
 
 		public override Dictionary<string, string> AddAuthenticationToHeaders(string uri, HttpMethod method, Dictionary<string, object> parameters, bool signed, PostParameters postParameterPosition, ArrayParametersSerialization arraySerialization)
@@ -36,10 +34,6 @@ namespace LiveCoin.Net
 				{"Sign",  ByteToString(encryptor.ComputeHash(Encoding.UTF8.GetBytes(query)))} };
 		}
 
-		public override string Sign(string toSign)
-		{
-			throw new NotImplementedException();
-		}
 		public override byte[] Sign(byte[] toSign)
 		{
 			if (Credentials.Key == null)

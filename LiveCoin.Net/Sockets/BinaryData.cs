@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using LiveCoin.Net.Test;
+using LiveCoin.Net.Objects.SocketObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +19,7 @@ namespace LiveCoin.Net.Sockets
 		[JsonIgnore]
 		internal string? Token { get; set; }
 		[JsonIgnore]
-		internal WsResponseMetaData.WsResponseMsgType ExpectedResponseMsgType { get; set; }
+		internal WsResponseMsgType ExpectedResponseMsgType { get; set; }
 		[JsonIgnore]
 		internal Func<BinaryData, JToken, WsResponse, bool>? HandleMessageData;
 		/// <summary>
@@ -31,6 +31,12 @@ namespace LiveCoin.Net.Sockets
 		/// For subscription only
 		/// </summary>
 		[JsonIgnore]
-		internal UnsubscribeRequest.ChannelType? ChannelType { get; set; }
+		internal ChannelType? ChannelType { get; set; }
+		/// <summary>
+		/// For subscription only. Msg of the response
+		/// </summary>
+		[JsonIgnore]
+		internal byte[]? Msg { get; set; }
+
 	}
 }

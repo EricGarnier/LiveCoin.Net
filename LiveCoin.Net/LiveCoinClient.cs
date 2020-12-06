@@ -66,7 +66,7 @@ namespace LiveCoin.Net
 		/// Create a new instance of LiveCoinClient using provided options
 		/// </summary>
 		/// <param name="options">The options to use for this client</param>
-		public LiveCoinClient(LiveCoinClientOptions options) : base(options, options.ApiCredentials == null ? null : new LiveCoinAuthenticationProvider(options.ApiCredentials, ArrayParametersSerialization.MultipleValues))
+		public LiveCoinClient(LiveCoinClientOptions options) : base(options, options.ApiCredentials == null ? null : new LiveCoinAuthenticationProvider(options.ApiCredentials))
 		{
 			manualParseError = true;
 			arraySerialization = ArrayParametersSerialization.MultipleValues;
@@ -93,7 +93,7 @@ namespace LiveCoin.Net
 		/// <param name="apiSecret">The api secret</param>
 		public void SetApiCredentials(string apiKey, string apiSecret)
 		{
-			SetAuthenticationProvider(new LiveCoinAuthenticationProvider(new ApiCredentials(apiKey, apiSecret), ArrayParametersSerialization.MultipleValues));
+			SetAuthenticationProvider(new LiveCoinAuthenticationProvider(new ApiCredentials(apiKey, apiSecret)));
 		}
 
 		/// <summary>

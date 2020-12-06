@@ -85,5 +85,7 @@ Examples can be found in the Examples folder.
 
 
 ## Release notes
+* Version 0.0.5 - 06 dec 2020
+    * Add websocket with public subscriptions.
 * Version 0.0.4 - 28 nov 2020
     * Only the REST API for Public data, Customer private data and open/cancel orders. Missing Rest deposit and withdrawal, vouchers. Also missing websockets.
