@@ -693,6 +693,34 @@
             </summary>
             <param name="symbolString">string to validate</param>
         </member>
+        <member name="T:LiveCoin.Net.LiveCoinOrderBookOptions">
+            <summary>
+            LiveCoin symbol order book options
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.LiveCoinOrderBookOptions.Limit">
+            <summary>
+            The top amount of results to keep in sync. If for example limit=10 is used, the order book will contain the 10 best bids and 10 best asks. Leaving this null will sync the full order book
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.LiveCoinOrderBookOptions.RestClient">
+            <summary>
+            The rest client to use. A new one will be created with default option if not provided.
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.LiveCoinOrderBookOptions.SocketClient">
+            <summary>
+            The socket client to use. A new one will be created with default option if not provided.
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinOrderBookOptions.#ctor(System.Nullable{System.Int32},LiveCoin.Net.LiveCoinClient,LiveCoin.Net.LiveCoinSocketClient)">
+            <summary>
+            Create new options
+            </summary>
+            <param name="limit">The top amount of results to keep in sync. If for example limit=10 is used, the order book will contain the 10 best bids and 10 best asks. Leaving this null will sync the full order book</param>
+            <param name="restClient">The rest client to use. A new one will be created with default option if not provided.</param>
+            <param name="socketClient">The socket client to use. A new one will be created with default option if not provided.</param>
+        </member>
         <member name="T:LiveCoin.Net.LiveCoinSocketClient">
             <summary>
             Client providing access to the LiveCoin websocket Api
@@ -712,13 +740,16 @@
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.AddHandler``1(System.Object,System.String,System.Boolean,CryptoExchange.Net.Sockets.SocketConnection,System.Action{``0})">
             <inheritdoc/>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.Ping">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.PingAsync">
             <summary>
             Ping command
             </summary>
             <returns>Pong response from the server</returns>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrder(System.String,System.Int64)">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.Ping">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.PingAsync"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrderAsync(System.String,System.Int64)">
             <summary>
             Cancel limit order
             </summary>
@@ -726,7 +757,24 @@
             <param name="orderId">id of the order to cancel</param>
             <returns></returns>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTicker(System.String,System.Nullable{System.Single},System.Action{LiveCoin.Net.Objects.SocketObjects.TickerNotification})">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrder(System.String,System.Int64)">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrderAsync(System.String,System.Int64)"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrderAsync(System.String,LiveCoin.Net.Objects.SocketObjects.OrderType,System.Decimal,System.Decimal)">
+            <summary>
+            Put a limit order - private api
+            Weight is 1 point
+            </summary>
+            <param name="symbol">currency pair</param>
+            <param name="amount">order amount</param>
+            <param name="orderType">order type</param>
+            <param name="price">order price</param>
+            <returns></returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrder(System.String,LiveCoin.Net.Objects.SocketObjects.OrderType,System.Decimal,System.Decimal)">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrderAsync(System.String,LiveCoin.Net.Objects.SocketObjects.OrderType,System.Decimal,System.Decimal)"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTickerAsync(System.String,System.Nullable{System.Single},System.Action{LiveCoin.Net.Objects.SocketObjects.TickerNotification})">
             <summary>
             Subscribe to ticker notification
             </summary>
@@ -737,7 +785,10 @@
             <param name="action">ticker processing</param>
             <returns>subscription result</returns>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeOrderBookRaw(System.String,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.OrderBookRawNotification})">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTicker(System.String,System.Nullable{System.Single},System.Action{LiveCoin.Net.Objects.SocketObjects.TickerNotification})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTickerAsync(System.String,System.Nullable{System.Single},System.Action{LiveCoin.Net.Objects.SocketObjects.TickerNotification})"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeOrderBookRawAsync(System.String,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.OrderBookRawNotification})">
             <summary>
             Subscribe to orderbook raw notification
             </summary>
@@ -749,7 +800,10 @@
             <param name="action">orderbook raw notification processing</param>
             <returns>subscription result</returns>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeOrderBook(System.String,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.OrderBookNotification})">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeOrderBookRaw(System.String,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.OrderBookRawNotification})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeOrderBookRawAsync(System.String,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.OrderBookRawNotification})"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeOrderBookAsync(System.String,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.OrderBookNotification})">
             <summary>
             Subscribe to orderbook notification
             </summary>
@@ -761,7 +815,10 @@
             <param name="action">orderbook notification processing</param>
             <returns>subscription result</returns>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTrade(System.String,System.Action{LiveCoin.Net.Objects.SocketObjects.TradeNotification})">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeOrderBook(System.String,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.OrderBookNotification})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeOrderBookAsync(System.String,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.OrderBookNotification})"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTradeAsync(System.String,System.Action{LiveCoin.Net.Objects.SocketObjects.TradeNotification})">
             <summary>
             Subscribe to trade notification
             </summary>
@@ -769,7 +826,10 @@
             <param name="action">trade notification processing</param>
             <returns>subscription result</returns>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeCandle(System.String,LiveCoin.Net.Objects.SocketObjects.CandleInterval,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.CandleNotification})">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTrade(System.String,System.Action{LiveCoin.Net.Objects.SocketObjects.TradeNotification})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTradeAsync(System.String,System.Action{LiveCoin.Net.Objects.SocketObjects.TradeNotification})"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeCandleAsync(System.String,LiveCoin.Net.Objects.SocketObjects.CandleInterval,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.CandleNotification})">
             <summary>
             Subscribe to candles (OHLCV) - public api
             </summary>
@@ -780,6 +840,40 @@
             </param>
             <param name="action">trade notification processing</param>
             <returns>subscription result</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeCandle(System.String,LiveCoin.Net.Objects.SocketObjects.CandleInterval,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.CandleNotification})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeCandleAsync(System.String,LiveCoin.Net.Objects.SocketObjects.CandleInterval,System.Nullable{System.Int32},System.Action{LiveCoin.Net.Objects.SocketObjects.CandleNotification})"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateOrderRawAsync(LiveCoin.Net.Objects.SocketObjects.SubscribeType,System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawNotification})">
+            <summary>
+            Subscribe to order changes - private api
+            </summary>
+            <param name="subscribeType">the subscription type</param>
+            <param name="action">private order raw notification processing</param>
+            <returns>subscription result</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateOrderRaw(LiveCoin.Net.Objects.SocketObjects.SubscribeType,System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawNotification})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateOrderRawAsync(LiveCoin.Net.Objects.SocketObjects.SubscribeType,System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawNotification})"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateTradeAsync(System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateTradeNotification})">
+            <summary>
+            Subscribe to trade changes - private api
+            </summary>
+            <param name="action">private trade notification processing</param>
+            <returns>subscription result</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateTrade(System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateTradeNotification})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateTradeAsync(System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateTradeNotification})"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateChangeBalanceAsync(System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateChangeBalanceNotification})">
+            <summary>
+            Subscribe to balance changes - private api
+            </summary>
+            <param name="action">private balance changes notification processing</param>
+            <returns>subscription result</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateChangeBalance(System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateChangeBalanceNotification})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.SubscribePrivateChangeBalanceAsync(System.Action{LiveCoin.Net.Objects.SocketObjects.PrivateChangeBalanceNotification})"/>
         </member>
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.AuthenticateSocket(CryptoExchange.Net.Sockets.SocketConnection)">
             <inheritdoc/>
@@ -798,6 +892,31 @@
         </member>
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.Unsubscribe(CryptoExchange.Net.Sockets.SocketConnection,CryptoExchange.Net.Sockets.SocketSubscription)">
             <inheritdoc/>
+        </member>
+        <member name="T:LiveCoin.Net.LiveCoinSymbolOrderBook">
+            <summary>
+            Implementation for a synchronized order book. After calling Start the order book will sync itself and keep up to date with new data. It will automatically try to reconnect and resync in case of a lost/interrupted connection.
+            Make sure to check the State property to see if the order book is synced.
+            </summary>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSymbolOrderBook.#ctor(System.String,LiveCoin.Net.LiveCoinOrderBookOptions)">
+            <summary>
+            Create a new instance
+            </summary>
+            <param name="symbol">The symbol of the order book</param>
+            <param name="options">The options for the order book</param>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSymbolOrderBook.DoStart">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSymbolOrderBook.DoReset">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSymbolOrderBook.DoResync">
+            <inheritdoc />
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSymbolOrderBook.Dispose">
+            <inheritdoc />
         </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoin24HTicker">
             <summary>
@@ -1452,6 +1571,51 @@
             Login
             </summary>
         </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.BalanceResponse">
+            <summary>
+            Balance event
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.BalanceResponse.BalanceType">
+            <summary>
+            Balance type
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.BalanceResponse.Currency">
+            <summary>
+            Currency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.BalanceResponse.Value">
+            <summary>
+            Value
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.BalanceType">
+            <summary>
+            Balance type
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.BalanceType.Total">
+            <summary>
+            Total
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.BalanceType.Available">
+            <summary>
+            Available
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.BalanceType.AvailableWithdrawal">
+            <summary>
+            Available for withdraw
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.BalanceType.Trade">
+            <summary>
+            Trade
+            </summary>
+        </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.CancelLimitOrderRequest">
             <summary>
             Weight is 1 point
@@ -1682,6 +1846,151 @@
             time of received ping
             </summary>
         </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.PrivateChangeBalanceNotification">
+            <summary>
+            Changebalance notification or subscription
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateChangeBalanceNotification.Data">
+            <summary>
+            Details
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent">
+            <summary>
+            Private raw order event
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent.OrderType">
+            <summary>
+            Order type
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent.Id">
+            <summary>
+            Order id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent.Timestamp">
+            <summary>
+            timestamp of the last order's change
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent.Price">
+            <summary>
+            Price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent.Quantity">
+            <summary>
+            Quantity
+            zero when order is removed from orderbook (cancelled or traded)
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent.CurrencyPair">
+            <summary>
+            Currency pair
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent.IsMarket">
+            <summary>
+            Is market
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawEvent.QuantityLeftBeforeCancellation">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawNotification">
+            <summary>
+            Private raw order notification or subscription
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateOrderRawNotification.Data">
+            <summary>
+            The private raw order events
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent">
+            <summary>
+            Private trade event
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.Id">
+            <summary>
+            Trade Id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.TradeType">
+            <summary>
+            Trade type
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.Timestamp">
+            <summary>
+            Timestamp
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.Price">
+            <summary>
+            Price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.OrderBuyId">
+            <summary>
+            Order buy id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.OrderSellId">
+            <summary>
+            Order sell id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.CurrencyPair">
+            <summary>
+            Currency pair
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.PrivateTradeNotification">
+            <summary>
+            Private trade notification or subscription
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeNotification.Data">
+            <summary>
+            Event details
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.PutLimitOrderRequest">
+            <summary>
+            Put limit order request - private api, you have to be logged in
+            Weight is 1 point
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.PutLimitOrderResponse">
+            <summary>
+            Put order limit response
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PutLimitOrderResponse.OrderId">
+            <summary>
+            Order Id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PutLimitOrderResponse.AmountLeft">
+            <summary>
+            quantity not traded yet.
+            when your order has been fully traded when you put it, this field will be zero
+            when your order has not been traded at all when you put it, this field will be original order's quantity
+            when your order has been partially traded when you put it, this field will be the quantity left in orderbook
+            </summary>
+        </member>
         <member name="P:LiveCoin.Net.Objects.SocketObjects.RequestExpired.Now">
             <summary>
             current Epoch timestamp
@@ -1690,6 +1999,21 @@
         <member name="P:LiveCoin.Net.Objects.SocketObjects.RequestExpired.Ttl">
             <summary>
             'Time to live' milliseconds
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.SubscribeType">
+            <summary>
+            Private order raw subscribe type
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.SubscribeType.OnlyEvents">
+            <summary>
+            Only event
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.SubscribeType.WithInitialState">
+            <summary>
+            With initial state
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.TickerChannelSubscribedResponse">
@@ -1878,6 +2202,11 @@
             </summary>
         </member>
         <member name="P:LiveCoin.Net.Sockets.BinaryData.ChannelType">
+            <summary>
+            For subscription only
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Sockets.BinaryData.PrivateChannelType">
             <summary>
             For subscription only
             </summary>

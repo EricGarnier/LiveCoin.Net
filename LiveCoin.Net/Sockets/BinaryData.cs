@@ -33,6 +33,11 @@ namespace LiveCoin.Net.Sockets
 		[JsonIgnore]
 		internal ChannelType? ChannelType { get; set; }
 		/// <summary>
+		/// For subscription only
+		/// </summary>
+		[JsonIgnore]
+		internal PrivateChannelType? PrivateChannelType { get; set; }
+		/// <summary>
 		/// For subscription only. Msg of the response
 		/// </summary>
 		[JsonIgnore]

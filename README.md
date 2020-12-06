@@ -85,6 +85,8 @@ Examples can be found in the Examples folder.
 
 
 ## Release notes
+* Version 1.0.0 - 06 dec 2020
+    * Add symbol order book, private subscriptions and correct some async signatures. Add also PutLimitOrder and CancelOrder on socket.
 * Version 0.0.5 - 06 dec 2020
     * Add websocket with public subscriptions.
 * Version 0.0.4 - 28 nov 2020

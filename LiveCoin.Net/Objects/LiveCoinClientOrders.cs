@@ -29,6 +29,6 @@ namespace LiveCoin.Net.Objects
         /// Detailed orders
         /// </summary>
         [JsonProperty("data")]
-        public LiveCoinClientOrder[]? Orders { get; set; }
+        public IEnumerable<LiveCoinClientOrder> Orders { get;} = new List<LiveCoinClientOrder>();
     }
 }

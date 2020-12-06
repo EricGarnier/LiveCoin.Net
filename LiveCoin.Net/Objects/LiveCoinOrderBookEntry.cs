@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CryptoExchange.Net.Converters;
+using CryptoExchange.Net.Interfaces;
 using LiveCoin.Net.Converters;
 using Newtonsoft.Json;
 
@@ -11,7 +12,7 @@ namespace LiveCoin.Net.Objects
 	/// An entry in the order book
 	/// </summary>
 	[JsonConverter(typeof(ArrayConverter))]
-	public class LiveCoinOrderBookEntry
+	public class LiveCoinOrderBookEntry : ISymbolOrderBookEntry
 	{
 		/// <summary>
 		/// The price of this order book entry

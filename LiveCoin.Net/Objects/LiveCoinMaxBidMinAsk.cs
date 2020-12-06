@@ -13,6 +13,6 @@ namespace LiveCoin.Net.Objects
 		/// <summary>
 		/// All max bid and min ask per currency pair
 		/// </summary>
-		public LiveCoinMaxBidMinAskEntry[]? CurrencyPairs { get; set; }
+		public IEnumerable<LiveCoinMaxBidMinAskEntry> CurrencyPairs { get; } = new List<LiveCoinMaxBidMinAskEntry>();
 	}
 }
