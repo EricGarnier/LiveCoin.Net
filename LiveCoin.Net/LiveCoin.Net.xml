@@ -760,6 +760,16 @@
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrder(System.String,System.Int64)">
             <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrderAsync(System.String,System.Int64)"/>
         </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.CancelOrdersAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Cancel orders
+            </summary>
+            <param name="symbols">currency pairs</param>
+            <returns></returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.CancelOrders(System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrderAsync(System.String,System.Int64)"/>
+        </member>
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrderAsync(System.String,LiveCoin.Net.Objects.SocketObjects.OrderType,System.Decimal,System.Decimal)">
             <summary>
             Put a limit order - private api
@@ -1636,6 +1646,16 @@
             quantity not traded yet. Never can be zero :)
             </summary>
         </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.CancelOrdersResponse">
+            <summary>
+            Cancel orders response
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.CancelOrdersResponse.Orders">
+            <summary>
+            Cancelled orders
+            </summary>
+        </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.CandleEvent">
             <summary>
             A candle event
@@ -1819,6 +1839,26 @@
         <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderBookRawNotification.Data">
             <summary>
             Event data
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderCancelled">
+            <summary>
+            Order cancelled
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderCancelled.Id">
+            <summary>
+            Order id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderCancelled.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderCancelled.TradeQuantity">
+            <summary>
+            Trade quantity
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderType">

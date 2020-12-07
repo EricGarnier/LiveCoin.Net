@@ -208,6 +208,25 @@ namespace LiveCoin.Net
 		public CallResult<CancelLimitOrderResponse> CancelLimitOrder(string symbol, long orderId) => CancelLimitOrderAsync(symbol, orderId).Result;
 
 		/// <summary>
+		/// Cancel orders
+		/// </summary>
+		/// <param name="symbols">currency pairs</param>
+		/// <returns></returns>
+		public async Task<CallResult<CancelOrdersResponse>> CancelOrdersAsync(IEnumerable<string> symbols)
+		{
+			symbols.ValidateNotNull(nameof(symbols));
+			var message = new CancelOrdersRequest()
+			{
+			};
+			message.CurrencyPairs.AddRange(symbols);
+			var binaryRequest = BuildRequest(message, nameof(CancelOrders) + NextId().ToString(), WsRequestMsgType.CancelOrders, true);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.CancelOrdersResponse;
+			return await Query<CancelOrdersResponse>(_baseAddress, binaryRequest, true);
+		}
+		///<inheritdoc cref="CancelLimitOrderAsync"/>
+		public CallResult<CancelOrdersResponse> CancelOrders(IEnumerable<string> symbols) => CancelOrdersAsync(symbols).Result;
+
+		/// <summary>
 		/// Put a limit order - private api
 		/// Weight is 1 point
 		/// </summary>
@@ -694,7 +713,7 @@ namespace LiveCoin.Net
 				case WsResponseMsgType.VoucherRedeemResponse:
 					break;
 				case WsResponseMsgType.CancelOrdersResponse:
-					break;
+					return DecodeMessage<CancelOrdersResponse>(msg);
 				case WsResponseMsgType.PongResponse:
 					return DecodeMessage<PongResponse>(msg);
 				case WsResponseMsgType.BalanceChangeChannelSubscribed:
