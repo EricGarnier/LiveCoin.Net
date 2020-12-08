@@ -4,10 +4,11 @@ using System.Text;
 
 namespace LiveCoin.Net.Objects.SocketObjects
 {
-	/// <summary>
-	/// Private trade event
-	/// </summary>
-	public class PrivateTradeEvent
+    /// <summary>
+    /// Private trade event
+    /// </summary>
+    [global::ProtoBuf.ProtoContract()]
+    public class PrivateTradeEvent
 	{
         /// <summary>
         /// Trade Id
