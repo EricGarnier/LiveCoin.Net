@@ -500,7 +500,7 @@ namespace LiveCoin.Net
 			var message = new PrivateSubscribeTradeChannelRequest
 			{
 			};
-			var binaryRequest = BuildRequest(message, nameof(SubscribePrivateTrade) + NextId(), WsRequestMsgType.PrivateSubscribeOrderRaw, true);
+			var binaryRequest = BuildRequest(message, nameof(SubscribePrivateTrade) + NextId(), WsRequestMsgType.PrivateSubscribeTrade, true);
 			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.PrivateTradeChannelSubscribed;
 			binaryRequest.PrivateChannelType = PrivateChannelType.Trade;
 			binaryRequest.HandleMessageData = HandlePrivateTradeNotificationMessage;
@@ -594,6 +594,15 @@ namespace LiveCoin.Net
 				callResult = new CallResult<T>(default(T), new ServerError(-1, $"Unknown message type received {response?.Meta?.ResponseType}"));
 				return true;
 
+			}
+			if (response?.Meta?.ResponseType == WsResponseMsgType.PrivateChannelUnsubscribed && fullRequest.ExpectedResponseMsgType ==WsResponseMsgType.PrivateChannelUnsubscribed)
+			{
+				var privateUnsubscribeResponse = GetWsMessage<PrivateChannelUnsubscribedResponse>(data);
+				if (privateUnsubscribeResponse.PrivateChannelType == fullRequest.PrivateChannelType)
+				{
+					callResult = new CallResult<T>(GetWsMessage<T>(data), null);
+					return true;
+				}
 			}
 			callResult = new CallResult<T>(default(T), null);
 			return false;
@@ -803,7 +812,7 @@ namespace LiveCoin.Net
 			{
 				return false;
 			}
-			if ( fullRequest.ChannelType != null && fullRequest?.CurrencyPair == null)
+			if (fullRequest.ChannelType != null && fullRequest?.CurrencyPair == null)
 			{
 				return false;
 			}
@@ -831,6 +840,7 @@ namespace LiveCoin.Net
 				};
 				var binaryRequest = BuildRequest(request, nameof(Unsubscribe) + NextId().ToString(), WsRequestMsgType.PrivateUnsubscribe, true);
 				binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.PrivateChannelUnsubscribed;
+				binaryRequest.PrivateChannelType = request.PrivateChannelType;
 				var res = await QueryAndWait<PrivateChannelUnsubscribedResponse>(connection, binaryRequest);
 				return res.Success;
 			}
