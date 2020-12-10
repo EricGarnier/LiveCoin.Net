@@ -744,7 +744,7 @@
             <summary>
             Ping command
             </summary>
-            <returns>Pong response from the server</returns>
+            <returns>Pong response from the server and elapsed millisecond</returns>
         </member>
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.Ping">
             <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.PingAsync"/>
@@ -770,7 +770,35 @@
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.CancelOrders(System.Collections.Generic.IEnumerable{System.String})">
             <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrderAsync(System.String,System.Int64)"/>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrderAsync(System.String,LiveCoin.Net.Objects.SocketObjects.OrderType,System.Decimal,System.Decimal)">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrdersAsync(System.String,System.Nullable{LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            get client orders
+            Weight is 1 point when currency is given, 5 points for "all currencies"
+            </summary>
+            <param name="symbol">currency pair</param>
+            <param name="status">order status filter</param>
+            <param name="issuedFrom">issued from</param>
+            <param name="issuedTo">issued to</param>
+            <param name="orderType">Order type filter</param>
+            <param name="startRow">start row number</param>
+            <param name="endRow">end row number</param>
+            <returns>list of orders</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrders(System.String,System.Nullable{LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrdersAsync(System.String,System.Nullable{LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrderAsync(System.String,System.Int64)">
+            <summary>
+            get one client order
+            </summary>
+            <param name="symbol">currency pair</param>
+            <param name="orderId">order id</param>
+            <returns>order detail</returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrder(System.String,System.Int64)">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrderAsync(System.String,System.Int64)"/>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrderAsync(System.String,LiveCoin.Net.Objects.SocketObjects.OrderBidAskType,System.Decimal,System.Decimal)">
             <summary>
             Put a limit order - private api
             Weight is 1 point
@@ -781,8 +809,8 @@
             <param name="price">order price</param>
             <returns></returns>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrder(System.String,LiveCoin.Net.Objects.SocketObjects.OrderType,System.Decimal,System.Decimal)">
-            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrderAsync(System.String,LiveCoin.Net.Objects.SocketObjects.OrderType,System.Decimal,System.Decimal)"/>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrder(System.String,LiveCoin.Net.Objects.SocketObjects.OrderBidAskType,System.Decimal,System.Decimal)">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.PutLimitOrderAsync(System.String,LiveCoin.Net.Objects.SocketObjects.OrderBidAskType,System.Decimal,System.Decimal)"/>
         </member>
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.SubscribeTickerAsync(System.String,System.Nullable{System.Single},System.Action{LiveCoin.Net.Objects.SocketObjects.TickerNotification})">
             <summary>
@@ -1726,6 +1754,201 @@
             The candle events
             </summary>
         </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse">
+            <summary>
+            Order detail
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.Id">
+            <summary>
+            Order id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.OrderStatus">
+            <summary>
+            Order status
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.currencyPair">
+            <summary>
+            Currency pair
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.Price">
+            <summary>
+            Price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.RemainingQuantity">
+            <summary>
+            Remaining quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.Blocked">
+            <summary>
+            Blocked
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.BlockedRemain">
+            <summary>
+            Blocked remain
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrderResponse.Trades">
+            <summary>
+            Trades
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.ClientOrdersResponse">
+            <summary>
+            List of orders
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrdersResponse.TotalRows">
+            <summary>
+            Total rows
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrdersResponse.StartRow">
+            <summary>
+            Start row
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrdersResponse.EndRow">
+            <summary>
+            End row
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.ClientOrdersResponse.Orders">
+            <summary>
+            Orders
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus">
+            <summary>
+            Filter order status
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.Open">
+            <summary>
+            Open orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.Closed">
+            <summary>
+            Closed orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.Cancelled">
+            <summary>
+            Cancelled orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.Partially">
+            <summary>
+            Partially filled orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.NotCancelled">
+            <summary>
+            Not cancelled orders
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.Order">
+            <summary>
+            Order
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.CurrencyPair">
+            <summary>
+            Currency pair
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.GoodUntilTime">
+            <summary>
+            Good until time
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.OrderType">
+            <summary>
+            Order type
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.OrderStatus">
+            <summary>
+            Order status
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.IssueTime">
+            <summary>
+            Order issue time
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.Price">
+            <summary>
+            Price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.RemainingQuantity">
+            <summary>
+            Remaining quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.CommissionByTrade">
+            <summary>
+            Commission by trade
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.BonusByTrade">
+            <summary>
+            Bonus by trade
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.BonusRate">
+            <summary>
+            Bonus rate
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.CommissionRate">
+            <summary>
+            Commission rate
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Order.LastModificationTime">
+            <summary>
+            Last modification time
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderBidAskType">
+            <summary>
+            Order type
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderBidAskType.Bid">
+            <summary>
+            Bid
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderBidAskType.Ask">
+            <summary>
+            Ask
+            </summary>
+        </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderBookChannelSubscribedResponse">
             <summary>
             Server answer to subscribe request
@@ -1861,19 +2084,89 @@
             Trade quantity
             </summary>
         </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderType">
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderMarketType">
             <summary>
             Order type
             </summary>
         </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderType.Bid">
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.MarketBuy">
             <summary>
-            Bid
+            Market buy
             </summary>
         </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderType.Ask">
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.MarketSell">
             <summary>
-            Ask
+            Market sell
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.LimitBuy">
+            <summary>
+            Limit buy
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.LimitSell">
+            <summary>
+            Limit sell
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.UnknownType">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.MarketBuyInFullAmount">
+            <summary>
+            Market buy in full amount
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderStatus">
+            <summary>
+            Order execution status
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.New">
+            <summary>
+            New
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.Open">
+            <summary>
+            Open
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.Expired">
+            <summary>
+            Expired
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.Cancelled">
+            <summary>
+            Cancelled
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.Executed">
+            <summary>
+            Executed
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.PartiallyFilled">
+            <summary>
+            Partially filled
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.PartiallyFilledAndCancelled">
+            <summary>
+            Partially filled and cancelled
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.PartiallyFilledAndExpired">
+            <summary>
+            Partially filled and expired
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.UnknownStatus">
+            <summary>
+            Unknown
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.PongResponse">
@@ -2209,6 +2502,41 @@
         <member name="P:LiveCoin.Net.Objects.SocketObjects.TradeNotification.Data">
             <summary>
             Trade details
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.SocketObjects.Trades">
+            <summary>
+            Trades 
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Trades.NbTrades">
+            <summary>
+            Trades
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Trades.Amount">
+            <summary>
+            Amount
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Trades.Quantity">
+            <summary>
+            Quantity
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Trades.AvgPrice">
+            <summary>
+            Average price
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Trades.Commission">
+            <summary>
+            Commission
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.Trades.Bonus">
+            <summary>
+            Bonus
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.TradeType">

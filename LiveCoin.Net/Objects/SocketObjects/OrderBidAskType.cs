@@ -7,7 +7,7 @@ namespace LiveCoin.Net.Objects.SocketObjects
     /// <summary>
     /// Order type
     /// </summary>
-    public enum OrderType
+    public enum OrderBidAskType
     {
         /// <summary>
         /// Bid

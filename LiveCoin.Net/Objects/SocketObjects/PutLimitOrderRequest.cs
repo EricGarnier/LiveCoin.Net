@@ -18,7 +18,7 @@ namespace LiveCoin.Net.Objects.SocketObjects
 		public string? CurrencyPair { get; set; }
 
 		[global::ProtoBuf.ProtoMember(3)]
-		public OrderType OrderType { get; set; } = OrderType.Bid;
+		public OrderBidAskType OrderType { get; set; } = OrderBidAskType.Bid;
 		public decimal Amount { get; set; }
 		[global::ProtoBuf.ProtoMember(4)]
 		private string AmountImpl { get => Amount.ToString(System.Globalization.CultureInfo.InvariantCulture); set => Amount = decimal.Parse(value, System.Globalization.NumberStyles.Number | System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture); }

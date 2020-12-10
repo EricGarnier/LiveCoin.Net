@@ -14,7 +14,7 @@ namespace LiveCoin.Net.Objects.SocketObjects
         /// Order type
         /// </summary>
         [global::ProtoBuf.ProtoMember(1)]
-        public OrderType OrderType { get; set; } = OrderType.Bid;
+        public OrderBidAskType OrderType { get; set; } = OrderBidAskType.Bid;
         /// <summary>
         /// Order id
         /// </summary>

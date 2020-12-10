@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -77,44 +78,51 @@ namespace LiveCoin.Net
 
 		private BinaryData BuildRequest<T>(T? request, string token, WsRequestMsgType requestType, bool signed) where T : class
 		{
-			byte[] msg = Array.Empty<byte>();
-			var meta = new WsRequestMetaData()
-			{
-				RequestType = requestType,
-				Token = token
-			};
-			if (request is IExpireControl expireControl)
-			{
-				expireControl.ExpireControl = new RequestExpired
-				{
-					Now = DateTime.UtcNow,
-					Ttl = _timeToLive
-				};
-			}
-			if (request != null)
-			{
-				using (MemoryStream msgStream = new MemoryStream())
-				{
-					ProtoBuf.Serializer.Serialize(msgStream, request);
-					msg = msgStream.ToArray();
-				}
-			}
-			WsRequest wsRequest = new WsRequest()
-			{
-				Meta = meta,
-				Msg = msg
-			};
-			if (signed)
-			{
-				wsRequest.Meta.Sign = authProvider?.Sign(wsRequest.Msg);
-			}
 			var result = new BinaryData();
-			using (var requestStream = new MemoryStream())
+			result._buildData = () =>
 			{
-				ProtoBuf.Serializer.Serialize(requestStream, wsRequest);
-				result.Data = System.Convert.ToBase64String(requestStream.ToArray());
-			}
+				byte[] msg = Array.Empty<byte>();
+				var meta = new WsRequestMetaData()
+				{
+					RequestType = requestType,
+					Token = token
+				};
+				if (request is IExpireControl expireControl)
+				{
+					expireControl.ExpireControl = new RequestExpired
+					{
+						Now = DateTime.UtcNow,
+						Ttl = _timeToLive
+					};
+				}
+				if (request != null)
+				{
+					using (MemoryStream msgStream = new MemoryStream())
+					{
+						ProtoBuf.Serializer.Serialize(msgStream, request);
+						msg = msgStream.ToArray();
+					}
+				}
+				WsRequest wsRequest = new WsRequest()
+				{
+					Meta = meta,
+					Msg = msg
+				};
+				if (signed)
+				{
+					wsRequest.Meta.Sign = authProvider?.Sign(wsRequest.Msg);
+				}
+				using (var requestStream = new MemoryStream())
+				{
+					ProtoBuf.Serializer.Serialize(requestStream, wsRequest);
+					return System.Convert.ToBase64String(requestStream.ToArray());
+				}
+			};
 			result.Token = token;
+			if (! (request is IExpireControl expireControl))
+			{
+				var t = result.Data;
+			}
 			return result;
 		}
 
@@ -177,15 +185,18 @@ namespace LiveCoin.Net
 		/// <summary>
 		/// Ping command
 		/// </summary>
-		/// <returns>Pong response from the server</returns>
-		public async Task<CallResult<PongResponse>> PingAsync()
+		/// <returns>Pong response from the server and elapsed millisecond</returns>
+		public async Task<CallResult<(PongResponse? serverResponse, long elapsedMilliseconds)>> PingAsync()
 		{
 			var binaryRequest = BuildRequest<object>(null, nameof(Ping) + NextId().ToString(), WsRequestMsgType.PingRequest, false);
+			var sw = Stopwatch.StartNew();
 			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.PongResponse;
-			return await Query<PongResponse>(_baseAddress, binaryRequest, false);
+			var result = await Query<PongResponse>(_baseAddress, binaryRequest, false);
+			sw.Stop();
+			return new CallResult<(PongResponse? serverResponse, long elapsedMilliseconds)>(result.Success ? (result.Data, sw.ElapsedMilliseconds) : (null, 0), result.Error);
 		}
 		///<inheritdoc cref="PingAsync"/>
-		public CallResult<PongResponse> Ping() => PingAsync().Result;
+		public CallResult<(PongResponse? serverResponse, long elapsedMilliseconds)> Ping() => PingAsync().Result;
 		/// <summary>
 		/// Cancel limit order
 		/// </summary>
@@ -227,6 +238,58 @@ namespace LiveCoin.Net
 		public CallResult<CancelOrdersResponse> CancelOrders(IEnumerable<string> symbols) => CancelOrdersAsync(symbols).Result;
 
 		/// <summary>
+		/// get client orders
+		/// Weight is 1 point when currency is given, 5 points for "all currencies"
+		/// </summary>
+		/// <param name="symbol">currency pair</param>
+		/// <param name="status">order status filter</param>
+		/// <param name="issuedFrom">issued from</param>
+		/// <param name="issuedTo">issued to</param>
+		/// <param name="orderType">Order type filter</param>
+		/// <param name="startRow">start row number</param>
+		/// <param name="endRow">end row number</param>
+		/// <returns>list of orders</returns>
+		public async Task<CallResult<ClientOrdersResponse>> ClientOrdersAsync(string? symbol, FilterOrderStatus? status, DateTime? issuedFrom, DateTime? issuedTo, OrderBidAskType? orderType, int? startRow, int? endRow)
+		{
+			symbol?.ValidateLiveCoinSymbol();
+			var message = new ClientOrdersRequest()
+			{
+				CurrencyPair = symbol,
+				Status = status,
+				IssuedFrom = issuedFrom,
+				IssuedTo = issuedTo,
+				OrderType = orderType,
+				StartRow = startRow,
+				EndRow = endRow,
+			};
+			var binaryRequest = BuildRequest(message, nameof(ClientOrders) + NextId().ToString(), WsRequestMsgType.ClientOrders, true);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.ClientOrdersResponse;
+			return await Query<ClientOrdersResponse>(_baseAddress, binaryRequest, true);
+		}
+		///<inheritdoc cref="ClientOrdersAsync"/>
+		public CallResult<ClientOrdersResponse> ClientOrders(string? symbol, FilterOrderStatus? status, DateTime? issuedFrom, DateTime? issuedTo, OrderBidAskType? orderType, int? startRow, int? endRow) => ClientOrdersAsync(symbol, status, issuedFrom, issuedTo, orderType, startRow, endRow).Result;
+
+		/// <summary>
+		/// get one client order
+		/// </summary>
+		/// <param name="symbol">currency pair</param>
+		/// <param name="orderId">order id</param>
+		/// <returns>order detail</returns>
+		public async Task<CallResult<ClientOrderResponse>> ClientOrderAsync(string symbol, long orderId)
+		{
+			symbol?.ValidateLiveCoinSymbol();
+			var message = new ClientOrderRequest()
+			{
+				CurrencyPair = symbol,
+				OrderId = orderId
+			};
+			var binaryRequest = BuildRequest(message, nameof(ClientOrder) + NextId().ToString(), WsRequestMsgType.ClientOrder, true);
+			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.ClientOrderResponse;
+			return await Query<ClientOrderResponse>(_baseAddress, binaryRequest, true);
+		}
+		///<inheritdoc cref="ClientOrderAsync"/>
+		public CallResult<ClientOrderResponse> ClientOrder(string symbol, long orderId) => ClientOrderAsync(symbol, orderId).Result;
+		/// <summary>
 		/// Put a limit order - private api
 		/// Weight is 1 point
 		/// </summary>
@@ -235,7 +298,7 @@ namespace LiveCoin.Net
 		/// <param name="orderType">order type</param>
 		/// <param name="price">order price</param>
 		/// <returns></returns>
-		public async Task<CallResult<PutLimitOrderResponse>> PutLimitOrderAsync(string symbol, OrderType orderType, decimal price, decimal amount)
+		public async Task<CallResult<PutLimitOrderResponse>> PutLimitOrderAsync(string symbol, OrderBidAskType orderType, decimal price, decimal amount)
 		{
 			symbol.ValidateLiveCoinSymbol();
 			var message = new PutLimitOrderRequest()
@@ -250,7 +313,7 @@ namespace LiveCoin.Net
 			return await Query<PutLimitOrderResponse>(_baseAddress, binaryRequest, true);
 		}
 		///<inheritdoc cref="PutLimitOrderAsync"/>
-		public CallResult<PutLimitOrderResponse> PutLimitOrder(string symbol, OrderType orderType, decimal price, decimal amount) => PutLimitOrderAsync(symbol, orderType, price, amount).Result;
+		public CallResult<PutLimitOrderResponse> PutLimitOrder(string symbol, OrderBidAskType orderType, decimal price, decimal amount) => PutLimitOrderAsync(symbol, orderType, price, amount).Result;
 
 		private static bool HandleTickerNotifyMessage(BinaryData request, JToken jtoken, WsResponse header)
 		{
@@ -561,7 +624,7 @@ namespace LiveCoin.Net
 				if (response?.Meta?.ResponseType == WsResponseMsgType.Error && response.Meta.Token == binaryRequest.Token)
 				{
 					var error = GetWsMessage<ErrorResponse>(data);
-					log.Write(LogVerbosity.Debug, "Authorization failed");
+					log.Write(LogVerbosity.Debug, $"Authorization failed {error?.Code} {error?.Message}");
 					result = new CallResult<bool>(false, new ServerError(error?.Code ?? -1, error?.Message ?? "Unknwon server error"));
 					return true;
 				}
@@ -595,7 +658,7 @@ namespace LiveCoin.Net
 				return true;
 
 			}
-			if (response?.Meta?.ResponseType == WsResponseMsgType.PrivateChannelUnsubscribed && fullRequest.ExpectedResponseMsgType ==WsResponseMsgType.PrivateChannelUnsubscribed)
+			if (response?.Meta?.ResponseType == WsResponseMsgType.PrivateChannelUnsubscribed && fullRequest.ExpectedResponseMsgType == WsResponseMsgType.PrivateChannelUnsubscribed)
 			{
 				var privateUnsubscribeResponse = GetWsMessage<PrivateChannelUnsubscribedResponse>(data);
 				if (privateUnsubscribeResponse.PrivateChannelType == fullRequest.PrivateChannelType)
@@ -674,9 +737,9 @@ namespace LiveCoin.Net
 				case WsResponseMsgType.TradesResponse:
 					break;
 				case WsResponseMsgType.ClientOrdersResponse:
-					break;
+					return DecodeMessage<ClientOrdersResponse>(msg);
 				case WsResponseMsgType.ClientOrderResponse:
-					break;
+					return DecodeMessage<ClientOrderResponse>(msg);
 				case WsResponseMsgType.CommissionResponse:
 					break;
 				case WsResponseMsgType.CommissionCommonInfoResponse:

@@ -9,10 +9,14 @@ namespace LiveCoin.Net.Sockets
 {
 	internal class BinaryData
 	{
+		[JsonIgnore]
+		private string? _data;
+		[JsonIgnore]
+		internal Func<string?>? _buildData;
 		/// <summary>
 		/// The binary data in base64 string
 		/// </summary>
-		public string? Data { get; set; }
+		public string? Data { get { if (_data == null && _buildData != null) { _data = _buildData(); } return _data; } set => _data = value; }
 		/// <summary>
 		/// The token associate with the request
 		/// </summary>

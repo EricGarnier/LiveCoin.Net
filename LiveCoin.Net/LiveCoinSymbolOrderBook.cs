@@ -72,7 +72,7 @@ namespace LiveCoin.Net
 
 		private void HandleUpdate(OrderBookNotification data)
 		{
-				UpdateOrderBook(data.Data.Where(d => d.OrderType == OrderType.Bid), data.Data.Where(d => d.OrderType == OrderType.Ask));
+				UpdateOrderBook(data.Data.Where(d => d.OrderType == OrderBidAskType.Bid), data.Data.Where(d => d.OrderType == OrderBidAskType.Ask));
 		}
 
 		/// <inheritdoc />

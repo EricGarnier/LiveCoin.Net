@@ -85,6 +85,8 @@ Examples can be found in the Examples folder.
 
 
 ## Release notes
+* Version 1.0.4 - 10 dec 2020
+    * Add ClientOrders and ClientOrder. Optimize signature process. Change Ping result.
 * Version 1.0.3 - 08 dec 2020
     * Bug fix for private subscriptions.
 * Version 1.0.2 - 08 dec 2020
