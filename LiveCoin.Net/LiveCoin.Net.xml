@@ -19,14 +19,14 @@
             Available balance
             </summary>
         </member>
-        <member name="F:LiveCoin.Net.Enums.BalanceType.Trade">
-            <summary>
-            Trade balance
-            </summary>
-        </member>
         <member name="F:LiveCoin.Net.Enums.BalanceType.AvailableWithdrawal">
             <summary>
             Available for withdraw balance
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.BalanceType.Trade">
+            <summary>
+            Trade balance
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Enums.OrderStatus">
@@ -36,7 +36,7 @@
         </member>
         <member name="F:LiveCoin.Net.Enums.OrderStatus.New">
             <summary>
-            New order
+            New
             </summary>
         </member>
         <member name="F:LiveCoin.Net.Enums.OrderStatus.Open">
@@ -76,7 +76,7 @@
         </member>
         <member name="F:LiveCoin.Net.Enums.OrderStatus.UnknownStatus">
             <summary>
-            Unknown status
+            Unknown
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Enums.OrderStatusFilter">
@@ -96,7 +96,7 @@
         </member>
         <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.Closed">
             <summary>
-            Executed or cancelled orders
+            Closed orders
             </summary>
         </member>
         <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.Cancelled">
@@ -104,14 +104,14 @@
             Cancelled orders
             </summary>
         </member>
-        <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.NotCancelled">
-            <summary>
-            All orders except cancelled ones
-            </summary>
-        </member>
         <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.Partially">
             <summary>
-            partially filled orders
+            Partially filled orders
+            </summary>
+        </member>
+        <member name="F:LiveCoin.Net.Enums.OrderStatusFilter.NotCancelled">
+            <summary>
+            Not cancelled orders
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Enums.OrderType">
@@ -119,14 +119,19 @@
             Order type
             </summary>
         </member>
+        <member name="F:LiveCoin.Net.Enums.OrderType.MarketBuy">
+            <summary>
+            Market buy
+            </summary>
+        </member>
         <member name="F:LiveCoin.Net.Enums.OrderType.MarketSell">
             <summary>
             Market sell
             </summary>
         </member>
-        <member name="F:LiveCoin.Net.Enums.OrderType.MarketBuy">
+        <member name="F:LiveCoin.Net.Enums.OrderType.LimitBuy">
             <summary>
-            Market buy
+            Limit buy
             </summary>
         </member>
         <member name="F:LiveCoin.Net.Enums.OrderType.LimitSell">
@@ -134,14 +139,9 @@
             Limit sell
             </summary>
         </member>
-        <member name="F:LiveCoin.Net.Enums.OrderType.LimitBuy">
-            <summary>
-            Limit sell
-            </summary>
-        </member>
         <member name="F:LiveCoin.Net.Enums.OrderType.UnknownType">
             <summary>
-            Unknown type
+            Unknown
             </summary>
         </member>
         <member name="F:LiveCoin.Net.Enums.OrderType.MarketBuyInFullAmount">
@@ -770,7 +770,7 @@
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.CancelOrders(System.Collections.Generic.IEnumerable{System.String})">
             <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.CancelLimitOrderAsync(System.String,System.Int64)"/>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrdersAsync(System.String,System.Nullable{LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})">
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrdersAsync(System.String,System.Nullable{LiveCoin.Net.Enums.OrderStatusFilter},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
             get client orders
             Weight is 1 point when currency is given, 5 points for "all currencies"
@@ -784,8 +784,8 @@
             <param name="endRow">end row number</param>
             <returns>list of orders</returns>
         </member>
-        <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrders(System.String,System.Nullable{LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})">
-            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrdersAsync(System.String,System.Nullable{LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})"/>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrders(System.String,System.Nullable{LiveCoin.Net.Enums.OrderStatusFilter},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrdersAsync(System.String,System.Nullable{LiveCoin.Net.Enums.OrderStatusFilter},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{LiveCoin.Net.Objects.SocketObjects.OrderBidAskType},System.Nullable{System.Int32},System.Nullable{System.Int32})"/>
         </member>
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.ClientOrderAsync(System.String,System.Int64)">
             <summary>
@@ -1629,31 +1629,6 @@
             Value
             </summary>
         </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.BalanceType">
-            <summary>
-            Balance type
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.BalanceType.Total">
-            <summary>
-            Total
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.BalanceType.Available">
-            <summary>
-            Available
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.BalanceType.AvailableWithdrawal">
-            <summary>
-            Available for withdraw
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.BalanceType.Trade">
-            <summary>
-            Trade
-            </summary>
-        </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.CancelLimitOrderRequest">
             <summary>
             Weight is 1 point
@@ -1829,36 +1804,6 @@
             Orders
             </summary>
         </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus">
-            <summary>
-            Filter order status
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.Open">
-            <summary>
-            Open orders
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.Closed">
-            <summary>
-            Closed orders
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.Cancelled">
-            <summary>
-            Cancelled orders
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.Partially">
-            <summary>
-            Partially filled orders
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.FilterOrderStatus.NotCancelled">
-            <summary>
-            Not cancelled orders
-            </summary>
-        </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.Order">
             <summary>
             Order
@@ -1949,21 +1894,6 @@
             Ask
             </summary>
         </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderBookChannelSubscribedResponse">
-            <summary>
-            Server answer to subscribe request
-            </summary>
-        </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderBookChannelSubscribedResponse.CurrencyPair">
-            <summary>
-            Order book channel subscribed
-            </summary>
-        </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderBookChannelSubscribedResponse.Data">
-            <summary>
-            current snapshot of orderbook. It is guaranted that all notifications will be from this snapshot.
-            </summary>
-        </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderBookEvent">
             <summary>
             Orderbook event
@@ -2002,21 +1932,6 @@
         <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderBookNotification.Data">
             <summary>
             Notification details
-            </summary>
-        </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderBookRawChannelSubscribedResponse">
-            <summary>
-            Subscription response from the server
-            </summary>
-        </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderBookRawChannelSubscribedResponse.CurrencyPair">
-            <summary>
-            Currency pair
-            </summary>
-        </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderBookRawChannelSubscribedResponse.Data">
-            <summary>
-            current snapshot of orderbook. It is guaranted that all notifications will be from this snapshot.
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderBookRawEvent">
@@ -2082,91 +1997,6 @@
         <member name="P:LiveCoin.Net.Objects.SocketObjects.OrderCancelled.TradeQuantity">
             <summary>
             Trade quantity
-            </summary>
-        </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderMarketType">
-            <summary>
-            Order type
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.MarketBuy">
-            <summary>
-            Market buy
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.MarketSell">
-            <summary>
-            Market sell
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.LimitBuy">
-            <summary>
-            Limit buy
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.LimitSell">
-            <summary>
-            Limit sell
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.UnknownType">
-            <summary>
-            Unknown
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderMarketType.MarketBuyInFullAmount">
-            <summary>
-            Market buy in full amount
-            </summary>
-        </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.OrderStatus">
-            <summary>
-            Order execution status
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.New">
-            <summary>
-            New
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.Open">
-            <summary>
-            Open
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.Expired">
-            <summary>
-            Expired
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.Cancelled">
-            <summary>
-            Cancelled
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.Executed">
-            <summary>
-            Executed
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.PartiallyFilled">
-            <summary>
-            Partially filled
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.PartiallyFilledAndCancelled">
-            <summary>
-            Partially filled and cancelled
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.PartiallyFilledAndExpired">
-            <summary>
-            Partially filled and expired
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.OrderStatus.UnknownStatus">
-            <summary>
-            Unknown
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.PongResponse">
@@ -2255,7 +2085,7 @@
             Trade Id
             </summary>
         </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.TradeType">
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.PrivateTradeEvent.Side">
             <summary>
             Trade type
             </summary>
@@ -2349,21 +2179,6 @@
             With initial state
             </summary>
         </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.TickerChannelSubscribedResponse">
-            <summary>
-            Ticker channel subscribe response
-            </summary>
-        </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.TickerChannelSubscribedResponse.CurrencyPair">
-            <summary>
-            The currency pair
-            </summary>
-        </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.TickerChannelSubscribedResponse.Data">
-            <summary>
-            Events
-            </summary>
-        </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.TickerEvent">
             <summary>
             Ticker event
@@ -2434,21 +2249,6 @@
             Ticker events
             </summary>
         </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.TradeChannelSubscribedResponse">
-            <summary>
-            Trade channel subscription
-            </summary>
-        </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.TradeChannelSubscribedResponse.CurrencyPair">
-            <summary>
-            Currency pair
-            </summary>
-        </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.TradeChannelSubscribedResponse.Data">
-            <summary>
-            Trade events
-            </summary>
-        </member>
         <member name="T:LiveCoin.Net.Objects.SocketObjects.TradeEvent">
             <summary>
             A single trade event
@@ -2459,7 +2259,7 @@
             Trade Id
             </summary>
         </member>
-        <member name="P:LiveCoin.Net.Objects.SocketObjects.TradeEvent.TradeType">
+        <member name="P:LiveCoin.Net.Objects.SocketObjects.TradeEvent.Side">
             <summary>
             Trade type
             </summary>
@@ -2539,21 +2339,6 @@
             Bonus
             </summary>
         </member>
-        <member name="T:LiveCoin.Net.Objects.SocketObjects.TradeType">
-            <summary>
-            Trade type
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.TradeType.Buy">
-            <summary>
-            Buy
-            </summary>
-        </member>
-        <member name="F:LiveCoin.Net.Objects.SocketObjects.TradeType.Sell">
-            <summary>
-            Sell
-            </summary>
-        </member>
         <member name="P:LiveCoin.Net.Sockets.BinaryData.Data">
             <summary>
             The binary data in base64 string
@@ -2604,17 +2389,6 @@
         </member>
         <member name="M:LiveCoin.Net.Sockets.BinarySocketFactory.CreateWebsocket(CryptoExchange.Net.Logging.Log,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.IDictionary{System.String,System.String})">
             <inheritdoc />
-        </member>
-        <member name="T:LiveCoin.Net.Sockets.UpdateSubscription`1">
-            <summary>
-            Subscription with server answer
-            </summary>
-            <typeparam name="T">Server aswer type</typeparam>
-        </member>
-        <member name="P:LiveCoin.Net.Sockets.UpdateSubscription`1.SubscriptionResponse">
-            <summary>
-            Server answer
-            </summary>
         </member>
     </members>
 </doc>

@@ -12,26 +12,26 @@ namespace LiveCoin.Net.Enums
 		/// <summary>
 		/// All orders
 		/// </summary>
-		All,
-		/// <summary>
-		/// Open orders
-		/// </summary>
-		Open,
-		/// <summary>
-		/// Executed or cancelled orders
-		/// </summary>
-		Closed,
-		/// <summary>
-		/// Cancelled orders
-		/// </summary>
-		Cancelled,
-		/// <summary>
-		/// All orders except cancelled ones
-		/// </summary>
-		NotCancelled,
-		/// <summary>
-		/// partially filled orders
-		/// </summary>
-		Partially
-	}
+		All = 0,
+        /// <summary>
+        /// Open orders
+        /// </summary>
+        Open = 1,
+        /// <summary>
+        /// Closed orders
+        /// </summary>
+        Closed = 2,
+        /// <summary>
+        /// Cancelled orders
+        /// </summary>
+        Cancelled = 4,
+        /// <summary>
+        /// Partially filled orders
+        /// </summary>
+        Partially = 5,
+        /// <summary>
+        /// Not cancelled orders
+        /// </summary>
+        NotCancelled = 6,
+    }
 }

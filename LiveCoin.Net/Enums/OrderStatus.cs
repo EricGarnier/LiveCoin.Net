@@ -9,41 +9,41 @@ namespace LiveCoin.Net.Enums
 	/// </summary>
 	public enum OrderStatus
 	{
-		/// <summary>
-		/// New order
-		/// </summary>
-		New,
-		/// <summary>
-		/// Open
-		/// </summary>
-		Open,
-		/// <summary>
-		/// Expired
-		/// </summary>
-		Expired,
-		/// <summary>
-		/// Cancelled
-		/// </summary>
-		Cancelled,
-		/// <summary>
-		/// Executed
-		/// </summary>
-		Executed,
-		/// <summary>
-		/// Partially filled
-		/// </summary>
-		PartiallyFilled,
-		/// <summary>
-		/// Partially filled and cancelled
-		/// </summary>
-		PartiallyFilledAndCancelled,
-		/// <summary>
-		/// Partially filled and expired
-		/// </summary>
-		PartiallyFilledAndExpired,
-		/// <summary>
-		/// Unknown status
-		/// </summary>
-		UnknownStatus
-	}
+        /// <summary>
+        /// New
+        /// </summary>
+        New = 1,
+        /// <summary>
+        /// Open
+        /// </summary>
+        Open = 2,
+        /// <summary>
+        /// Expired
+        /// </summary>
+        Expired = 3,
+        /// <summary>
+        /// Cancelled
+        /// </summary>
+        Cancelled = 4,
+        /// <summary>
+        /// Executed
+        /// </summary>
+        Executed = 5,
+        /// <summary>
+        /// Partially filled
+        /// </summary>
+        PartiallyFilled = 6,
+        /// <summary>
+        /// Partially filled and cancelled
+        /// </summary>
+        PartiallyFilledAndCancelled = 7,
+        /// <summary>
+        /// Partially filled and expired
+        /// </summary>
+        PartiallyFilledAndExpired = 8,
+        /// <summary>
+        /// Unknown
+        /// </summary>
+        UnknownStatus = 9,
+    }
 }

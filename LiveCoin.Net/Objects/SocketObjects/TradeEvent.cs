@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LiveCoin.Net.Enums;
 
 namespace LiveCoin.Net.Objects.SocketObjects
 {
@@ -19,7 +20,7 @@ namespace LiveCoin.Net.Objects.SocketObjects
         /// Trade type
         /// </summary>
         [global::ProtoBuf.ProtoMember(2)]
-        public TradeType TradeType { get; set; } = TradeType.Buy;
+        public Side Side{ get; set; } = Side.Buy;
         /// <summary>
         /// Timestamp
         /// </summary>

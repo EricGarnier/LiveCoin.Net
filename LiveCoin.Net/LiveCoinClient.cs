@@ -66,7 +66,7 @@ namespace LiveCoin.Net
 		/// Create a new instance of LiveCoinClient using provided options
 		/// </summary>
 		/// <param name="options">The options to use for this client</param>
-		public LiveCoinClient(LiveCoinClientOptions options) : base(options, options.ApiCredentials == null ? null : new LiveCoinAuthenticationProvider(options.ApiCredentials))
+		public LiveCoinClient(LiveCoinClientOptions options) : base("LiveCoin", options, options.ApiCredentials == null ? null : new LiveCoinAuthenticationProvider(options.ApiCredentials))
 		{
 			manualParseError = true;
 			arraySerialization = ArrayParametersSerialization.MultipleValues;

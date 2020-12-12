@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LiveCoin.Net.Enums;
 
 namespace LiveCoin.Net.Objects.SocketObjects
 {

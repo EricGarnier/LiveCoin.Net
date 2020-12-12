@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LiveCoin.Net.Enums;
 
 namespace LiveCoin.Net.Objects.SocketObjects
 {
@@ -12,7 +13,7 @@ namespace LiveCoin.Net.Objects.SocketObjects
 		[global::ProtoBuf.ProtoMember(2)]
 		public string? CurrencyPair { get; set; }
 		[global::ProtoBuf.ProtoMember(3)]
-		public FilterOrderStatus? Status { get; set; }
+		public OrderStatusFilter? Status { get; set; }
 		public DateTime? IssuedFrom { get; set; }
 		[global::ProtoBuf.ProtoMember(4)]
 		private long? IssuedFromImpl { get => IssuedFrom?.ToUnixMilliseconds(); set => IssuedFrom = value?.ToUnixMilliseconds(); }

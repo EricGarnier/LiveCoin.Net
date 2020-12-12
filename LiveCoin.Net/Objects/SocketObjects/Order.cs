@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LiveCoin.Net.Enums;
 
 namespace LiveCoin.Net.Objects.SocketObjects
 {
@@ -31,7 +32,7 @@ namespace LiveCoin.Net.Objects.SocketObjects
         /// Order type
         /// </summary>
         [global::ProtoBuf.ProtoMember(4)]
-        public OrderMarketType OrderType { get; set; } = OrderMarketType.MarketBuy;
+        public OrderType OrderType { get; set; } = OrderType.MarketBuy;
         /// <summary>
         /// Order status
         /// </summary>

@@ -85,6 +85,8 @@ Examples can be found in the Examples folder.
 
 
 ## Release notes
+* Version 1.0.5 - 12 dec 2020
+    * Merge some enum from socket to REST equivalent. Change subscription to flow the response into the notification stream. Upgrade version of dependent package.
 * Version 1.0.4 - 10 dec 2020
     * Add ClientOrders and ClientOrder. Optimize signature process. Change Ping result.
 * Version 1.0.3 - 08 dec 2020

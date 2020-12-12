@@ -12,18 +12,18 @@ namespace LiveCoin.Net.Enums
 		/// <summary>
 		/// Total balance
 		/// </summary>
-		Total,
+		Total = 1,
 		/// <summary>
 		/// Available balance
 		/// </summary>
-		Available,
-		/// <summary>
-		/// Trade balance
-		/// </summary>
-		Trade,
+		Available = 2,
 		/// <summary>
 		/// Available for withdraw balance
 		/// </summary>
-		AvailableWithdrawal
+		AvailableWithdrawal = 3,
+		/// <summary>
+		/// Trade balance
+		/// </summary>
+		Trade = 4,
 	}
 }

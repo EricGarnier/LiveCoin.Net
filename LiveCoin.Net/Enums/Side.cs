@@ -12,11 +12,11 @@ namespace LiveCoin.Net.Enums
         /// <summary>
         /// Buy Side
         /// </summary>
-        Buy,
+        Buy =1,
         /// <summary>
         /// Sell Side
         /// </summary>
-        Sell
+        Sell=2
 
     }
 }
