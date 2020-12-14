@@ -676,6 +676,19 @@
             <param name="ct">Cancellation token</param>
             <returns>cancellation request result</returns>
         </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetPaymentAddressAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Get deposit address for selected cryptocurrency.
+            </summary>
+            <param name="currency">Currency code</param>
+            <param name="ct">Cancellation token</param>
+            <returns> deposit address for selected cryptocurrency
+            	Wallet field has a delimiter "::" for using if you need Memo or Payment ID data besides your wallet to deposit coins(coins like: XMR, BTS, THS, STEEM). In this case wallet data is entered before delimiter, and Memo/Payment ID - after.
+            </returns>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinClient.GetPaymentAddress(System.String,System.Threading.CancellationToken)">
+            <inheritdoc cref="M:LiveCoin.Net.LiveCoinClient.GetPaymentAddressAsync(System.String,System.Threading.CancellationToken)"/>
+        </member>
         <member name="M:LiveCoin.Net.LiveCoinClient.ParseErrorResponse(Newtonsoft.Json.Linq.JToken)">
             <inheritdoc />
         </member>
@@ -736,6 +749,19 @@
             Create a new instance of BinanceSocketClient using provided options
             </summary>
             <param name="options">The options to use for this client</param>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SetDefaultOptions(LiveCoin.Net.Objects.LiveCoinSocketClientOptions)">
+            <summary>
+            Set the default options to be used when creating new clients
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.SetApiCredentials(System.String,System.String)">
+            <summary>
+            Set the API key and secret
+            </summary>
+            <param name="apiKey">The api key</param>
+            <param name="apiSecret">The api secret</param>
         </member>
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.AddHandler``1(System.Object,System.String,System.Boolean,CryptoExchange.Net.Sockets.SocketConnection,System.Action{``0})">
             <inheritdoc/>
@@ -1009,6 +1035,32 @@
         <member name="P:LiveCoin.Net.Objects.LiveCoin24HTicker.VWap">
             <summary>
             The vwap
+            </summary>
+        </member>
+        <member name="T:LiveCoin.Net.Objects.LiveCoinAddress">
+            <summary>
+            deposit address
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinAddress.UserId">
+            <summary>
+            User id
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinAddress.UserName">
+            <summary>
+            User name
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinAddress.Currency">
+            <summary>
+            Currency
+            </summary>
+        </member>
+        <member name="P:LiveCoin.Net.Objects.LiveCoinAddress.Wallet">
+            <summary>
+            Wallet
+            Wallet field has a delimiter "::" for using if you need Memo or Payment ID data besides your wallet to deposit coins (coins like: XMR, BTS, THS, STEEM). In this case wallet data is entered before delimiter, and Memo/Payment ID - after.
             </summary>
         </member>
         <member name="T:LiveCoin.Net.Objects.LiveCoinBalanceElement">

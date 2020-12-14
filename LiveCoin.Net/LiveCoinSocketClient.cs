@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CryptoExchange.Net;
+using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Logging;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
@@ -26,7 +27,7 @@ namespace LiveCoin.Net
 	public class LiveCoinSocketClient : SocketClient
 	{
 		#region fields
-		private readonly static LiveCoinSocketClientOptions _defaultOptions = new LiveCoinSocketClientOptions();
+		private static LiveCoinSocketClientOptions _defaultOptions = new LiveCoinSocketClientOptions();
 		private static LiveCoinSocketClientOptions DefaultOptions => _defaultOptions.Copy();
 		private readonly int _timeToLive;
 
@@ -55,6 +56,27 @@ namespace LiveCoin.Net
 		#endregion
 
 		#region method
+
+		/// <summary>
+		/// Set the default options to be used when creating new clients
+		/// </summary>
+		/// <param name="options"></param>
+		public static void SetDefaultOptions(LiveCoinSocketClientOptions options)
+		{
+			_defaultOptions = options;
+		}
+
+		/// <summary>
+		/// Set the API key and secret
+		/// </summary>
+		/// <param name="apiKey">The api key</param>
+		/// <param name="apiSecret">The api secret</param>
+		public void SetApiCredentials(string apiKey, string apiSecret)
+		{
+			SetAuthenticationProvider(new LiveCoinAuthenticationProvider(new ApiCredentials(apiKey, apiSecret)));
+		}
+
+
 		/// <inheritdoc/>
 		protected override SocketSubscription AddHandler<T>(object? request, string? identifier, bool userSubscription, SocketConnection connection, Action<T> dataHandler)
 		{
@@ -126,61 +148,6 @@ namespace LiveCoin.Net
 			}
 			return result;
 		}
-
-		//private async Task<CallResult<UpdateSubscription<V>>> Subscribe<T, V>(BinaryData request, bool authenticated, Action<T> dataHandler) where T : class where V : class
-		//{
-		//	SocketConnection socket;
-		//	SocketSubscription handler;
-		//	var released = false;
-		//	var identifier = request.Token;
-		//	var url = _baseAddress;
-		//	await semaphoreSlim.WaitAsync().ConfigureAwait(false);
-		//	try
-		//	{
-		//		socket = GetWebsocket(url, authenticated);
-		//		handler = AddHandler(request, identifier, true, socket, dataHandler);
-		//		if (SocketCombineTarget == 1)
-		//		{
-		//			// Can release early when only a single sub per connection
-		//			semaphoreSlim.Release();
-		//			released = true;
-		//		}
-
-		//		var connectResult = await ConnectIfNeeded(socket, authenticated).ConfigureAwait(false);
-		//		if (!connectResult)
-		//			return new CallResult<UpdateSubscription<V>>(null, connectResult.Error);
-		//	}
-		//	finally
-		//	{
-		//		//When the task is ready, release the semaphore. It is vital to ALWAYS release the semaphore when we are ready, or else we will end up with a Semaphore that is forever locked.
-		//		//This is why it is important to do the Release within a try...finally clause; program execution may crash or take a different path, this way you are guaranteed execution
-		//		if (!released)
-		//			semaphoreSlim.Release();
-		//	}
-
-		//	if (socket.PausedActivity)
-		//	{
-		//		log.Write(LogVerbosity.Info, "Socket has been paused, can't subscribe at this moment");
-		//		return new CallResult<UpdateSubscription<V>>(default, new ServerError("Socket is paused"));
-		//	}
-
-		//	if (request != null)
-		//	{
-		//		var subResult = await SubscribeAndWait(socket, request, handler).ConfigureAwait(false);
-		//		if (!subResult)
-		//		{
-		//			await socket.Close(handler).ConfigureAwait(false);
-		//			return new CallResult<UpdateSubscription<V>>(null, subResult.Error);
-		//		}
-		//	}
-		//	else
-		//	{
-		//		handler.Confirmed = true;
-		//	}
-
-		//	socket.ShouldReconnect = true;
-		//	return new CallResult<UpdateSubscription<V>>(new UpdateSubscription<V>(socket, handler, DecodeMessage<V>(request?.Msg)), null);
-		//}
 
 
 		/// <summary>
@@ -351,7 +318,7 @@ namespace LiveCoin.Net
 			binaryRequest.ChannelType = ChannelType.Ticker;
 			binaryRequest.CurrencyPair = symbol;
 			binaryRequest.HandleMessageData = HandleTickerNotifyMessage;
-			return await this.Subscribe<TickerNotification>(binaryRequest, null, false, action);
+			return await this.Subscribe<TickerNotification>(_baseAddress, binaryRequest, null, false, action);
 		}
 		///<inheritdoc cref="SubscribeTickerAsync"/>
 		public CallResult<UpdateSubscription> SubscribeTicker(string symbol, float? frequency, Action<TickerNotification> action) => SubscribeTickerAsync(symbol, frequency, action).Result;
@@ -393,7 +360,7 @@ namespace LiveCoin.Net
 			binaryRequest.ChannelType = ChannelType.OrderBookRaw;
 			binaryRequest.CurrencyPair = symbol;
 			binaryRequest.HandleMessageData = HandleOrderBookRawNotificationMessage;
-			return await this.Subscribe<OrderBookRawNotification>(binaryRequest,null,  false, action);
+			return await this.Subscribe<OrderBookRawNotification>(_baseAddress, binaryRequest, null,  false, action);
 		}
 		///<inheritdoc cref="SubscribeOrderBookRawAsync"/>
 		public CallResult<UpdateSubscription> SubscribeOrderBookRaw(string symbol, int? depth, Action<OrderBookRawNotification> action) => SubscribeOrderBookRawAsync(symbol, depth, action).Result;
@@ -434,7 +401,7 @@ namespace LiveCoin.Net
 			binaryRequest.ChannelType = ChannelType.OrderBook;
 			binaryRequest.CurrencyPair = symbol;
 			binaryRequest.HandleMessageData = HandleOrderBookNotificationMessage;
-			return await this.Subscribe<OrderBookNotification>(binaryRequest, null, false, action);
+			return await this.Subscribe<OrderBookNotification>(_baseAddress, binaryRequest, null, false, action);
 		}
 		///<inheritdoc cref="SubscribeOrderBookAsync"/>
 		public CallResult<UpdateSubscription> SubscribeOrderBook(string symbol, int? depth, Action<OrderBookNotification> action) => SubscribeOrderBookAsync(symbol, depth, action).Result;
@@ -470,7 +437,7 @@ namespace LiveCoin.Net
 			binaryRequest.ChannelType = ChannelType.Trade;
 			binaryRequest.CurrencyPair = symbol;
 			binaryRequest.HandleMessageData = HandleTradeNotificationMessage;
-			return await this.Subscribe<TradeNotification>(binaryRequest, null, false, action);
+			return await this.Subscribe<TradeNotification>(_baseAddress, binaryRequest, null, false, action);
 		}
 		///<inheritdoc cref="SubscribeTradeAsync"/>
 		public CallResult<UpdateSubscription> SubscribeTrade(string symbol, Action<TradeNotification> action) => SubscribeTradeAsync(symbol, action).Result;
@@ -512,7 +479,7 @@ namespace LiveCoin.Net
 			binaryRequest.ChannelType = ChannelType.Candle;
 			binaryRequest.CurrencyPair = symbol;
 			binaryRequest.HandleMessageData = HandleCandleNotificationMessage;
-			return await this.Subscribe<CandleNotification>(binaryRequest, null,false, action);
+			return await this.Subscribe<CandleNotification>(_baseAddress, binaryRequest, null,false, action);
 		}
 		///<inheritdoc cref="SubscribeCandleAsync"/>
 		public CallResult<UpdateSubscription> SubscribeCandle(string symbol, CandleInterval candleInterval, int? depth, Action<CandleNotification> action) => SubscribeCandleAsync(symbol, candleInterval, depth, action).Result;
@@ -541,7 +508,7 @@ namespace LiveCoin.Net
 			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.PrivateOrderRawChannelSubscribed;
 			binaryRequest.PrivateChannelType = PrivateChannelType.OrderRaw;
 			binaryRequest.HandleMessageData = HandlePrivateOrderRawNotificationMessage;
-			return await this.Subscribe<PrivateOrderRawNotification>(binaryRequest, null, true, action);
+			return await this.Subscribe<PrivateOrderRawNotification>(_baseAddress, binaryRequest, null, true, action);
 		}
 		///<inheritdoc cref="SubscribePrivateOrderRawAsync"/>
 		public CallResult<UpdateSubscription> SubscribePrivateOrderRaw(SubscribeType subscribeType, Action<PrivateOrderRawNotification> action) => SubscribePrivateOrderRawAsync(subscribeType, action).Result;
@@ -568,7 +535,7 @@ namespace LiveCoin.Net
 			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.PrivateTradeChannelSubscribed;
 			binaryRequest.PrivateChannelType = PrivateChannelType.Trade;
 			binaryRequest.HandleMessageData = HandlePrivateTradeNotificationMessage;
-			return await this.Subscribe<PrivateTradeNotification>(binaryRequest, null, true, action);
+			return await this.Subscribe<PrivateTradeNotification>(_baseAddress, binaryRequest, null, true, action);
 		}
 		///<inheritdoc cref="SubscribePrivateTradeAsync"/>
 		public CallResult<UpdateSubscription> SubscribePrivateTrade(Action<PrivateTradeNotification> action) => SubscribePrivateTradeAsync(action).Result;
@@ -596,7 +563,7 @@ namespace LiveCoin.Net
 			binaryRequest.ExpectedResponseMsgType = WsResponseMsgType.BalanceChangeChannelSubscribed;
 			binaryRequest.PrivateChannelType = PrivateChannelType.ChangeBalance;
 			binaryRequest.HandleMessageData = HandlePrivateChangeBalanceNotificationMessage;
-			return await this.Subscribe<PrivateChangeBalanceNotification>(binaryRequest, null, true, action);
+			return await this.Subscribe<PrivateChangeBalanceNotification>(_baseAddress, binaryRequest, null, true, action);
 		}
 		///<inheritdoc cref="SubscribePrivateChangeBalanceAsync"/>
 		public CallResult<UpdateSubscription> SubscribePrivateChangeBalance(Action<PrivateChangeBalanceNotification> action) => SubscribePrivateChangeBalanceAsync(action).Result;

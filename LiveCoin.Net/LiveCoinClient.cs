@@ -50,6 +50,7 @@ namespace LiveCoin.Net
 		private const string ExchangeCommissionEndpoint = "exchange/commission";
 		private const string ExchangeCommissionCommonInfoEndpoint = "exchange/commissionCommonInfo";
 		private const string ExchangeOrderEndpoint = "exchange/order";
+		private const string PaymentAddressEndPoint = "payment/get/address";
 
 
 		#endregion
@@ -462,9 +463,9 @@ namespace LiveCoin.Net
 				if (!int.TryParse(stringResult.Data, out size))
 				{
 					return new WebCallResult<int>(
-						stringResult.ResponseStatusCode, 
+						stringResult.ResponseStatusCode,
 						stringResult.ResponseHeaders,
-						0, 
+						0,
 						new DeserializeError($"Cannot deserialize size", stringResult.Data)
 						);
 				}
@@ -636,6 +637,26 @@ namespace LiveCoin.Net
 		/// <param name="ct">Cancellation token</param>
 		/// <returns>cancellation request result</returns>
 		public WebCallResult<LiveCoinCancelResult> CancelLimitOrder(string symbol, long orderId, CancellationToken ct = default) => CancelLimitOrderAsync(symbol, orderId, ct).Result;
+
+		#endregion
+		#region deposit and withdrawal
+		/// <summary>
+		/// Get deposit address for selected cryptocurrency.
+		/// </summary>
+		/// <param name="currency">Currency code</param>
+		/// <param name="ct">Cancellation token</param>
+		/// <returns> deposit address for selected cryptocurrency
+		///		Wallet field has a delimiter "::" for using if you need Memo or Payment ID data besides your wallet to deposit coins(coins like: XMR, BTS, THS, STEEM). In this case wallet data is entered before delimiter, and Memo/Payment ID - after.
+		///	</returns>
+		public async Task<WebCallResult<LiveCoinAddress>> GetPaymentAddressAsync(string currency, CancellationToken ct = default)
+		{
+			if (string.IsNullOrWhiteSpace(currency))
+				throw new ArgumentNullException(nameof(currency));
+			var parameters = new Dictionary<string, object> { { "currency", currency } };
+			return await SendRequest<LiveCoinAddress>(GetUrl(PaymentAddressEndPoint), HttpMethod.Get, ct, parameters, true).ConfigureAwait(false);
+		}
+		///<inheritdoc cref="GetPaymentAddressAsync"/>
+		public WebCallResult<LiveCoinAddress> GetPaymentAddress(string currency, CancellationToken ct = default) => GetPaymentAddressAsync(currency, ct).Result;
 
 		#endregion
 		#region helpers
