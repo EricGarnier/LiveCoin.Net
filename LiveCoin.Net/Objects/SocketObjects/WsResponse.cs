@@ -12,6 +12,10 @@ namespace LiveCoin.Net.Objects.SocketObjects
 
 		[global::ProtoBuf.ProtoMember(2)]
 		public byte[]? Msg { get; set; }
+		public override string ToString()
+		{
+			return $"{nameof(WsResponse)} Meta:{Meta}, msg length:{Msg?.Length}";
+		}
 
 	}
 }

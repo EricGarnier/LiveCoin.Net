@@ -611,6 +611,7 @@ namespace LiveCoin.Net
 				if (response?.Meta?.ResponseType == fullRequest.ExpectedResponseMsgType)
 				{
 					callResult = new CallResult<T>(GetWsMessage<T>(data), null);
+					log.Write(LogVerbosity.Debug, $"{nameof(HandleQueryResponse)} match found in message:{data}, request:{request}, response:{response}");
 					return true;
 				}
 				else if (response?.Meta?.ResponseType == WsResponseMsgType.Error)
@@ -619,10 +620,12 @@ namespace LiveCoin.Net
 					if (error != null)
 					{
 						callResult = new CallResult<T>(default(T), new ServerError(error.Code, error.Message ?? "An error occured"));
+						log.Write(LogVerbosity.Debug, $"{nameof(HandleQueryResponse)} error found in message:{data}, request:{request}, response:{response}");
 						return true;
 					}
 				}
 				callResult = new CallResult<T>(default(T), new ServerError(-1, $"Unknown message type received {response?.Meta?.ResponseType}"));
+				log.Write(LogVerbosity.Debug, $"{nameof(HandleQueryResponse)} unknown message in message:{data}, request:{request}, response:{response}");
 				return true;
 
 			}
@@ -632,6 +635,7 @@ namespace LiveCoin.Net
 				if (privateUnsubscribeResponse.PrivateChannelType == fullRequest.PrivateChannelType)
 				{
 					callResult = new CallResult<T>(GetWsMessage<T>(data), null);
+					log.Write(LogVerbosity.Debug, $"{nameof(HandleQueryResponse)} private match found in message:{data}, request:{request}, response:{response}");
 					return true;
 				}
 			}
@@ -790,7 +794,7 @@ namespace LiveCoin.Net
 				if (response?.Meta?.ResponseType == fullRequest.ExpectedResponseMsgType)
 				{
 					callResult = new CallResult<object>(true, null);
-					fullRequest.Msg = response.Msg;
+					log.Write(LogVerbosity.Debug, $"{nameof(HandleSubscriptionResponse)} match between message:{jmessage}, request:{request}, response:{response}");
 					return true;
 				}
 				else if (response?.Meta?.ResponseType == WsResponseMsgType.Error)
@@ -799,10 +803,12 @@ namespace LiveCoin.Net
 					if (error != null)
 					{
 						callResult = new CallResult<object>(false, new ServerError(error.Code, error.Message ?? "An error occured"));
+						log.Write(LogVerbosity.Debug, $"{nameof(HandleSubscriptionResponse)} error found in message:{jmessage}, request:{request}, response:{response}");
 						return true;
 					}
 				}
 				callResult = new CallResult<object>(false, new ServerError(-1, $"Unknown message type received {response?.Meta?.ResponseType}"));
+				log.Write(LogVerbosity.Debug, $"{nameof(HandleSubscriptionResponse)} unknown message in message:{jmessage}, request:{request}, response:{response}");
 				return true;
 
 			}
@@ -825,8 +831,13 @@ namespace LiveCoin.Net
 			}
 			else
 			{
-				return fullRequest.HandleMessageData?.Invoke(fullRequest, message, response) == true;
-			}
+				var match = fullRequest.HandleMessageData?.Invoke(fullRequest, message, response) == true;
+				if (match)
+				{
+					log.Write(LogVerbosity.Debug, $"{nameof(MessageMatchesHandler)} match between message:{message}, request:{request}, response:{response}");
+				};
+				return match;
+			};
 		}
 
 		/// <inheritdoc/>

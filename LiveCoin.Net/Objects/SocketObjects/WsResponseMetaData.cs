@@ -12,5 +12,9 @@ namespace LiveCoin.Net.Objects.SocketObjects
 
         [global::ProtoBuf.ProtoMember(2)]
         public string Token { get; set; } = string.Empty;
-    }
+		public override string ToString()
+		{
+			return $"responseType:{ResponseType}, token:{Token}";
+		}
+	}
 }

@@ -2416,11 +2416,6 @@
             For subscription only
             </summary>
         </member>
-        <member name="P:LiveCoin.Net.Sockets.BinaryData.Msg">
-            <summary>
-            For subscription only. Msg of the response
-            </summary>
-        </member>
         <member name="M:LiveCoin.Net.Sockets.BinarySocket.#ctor(CryptoExchange.Net.Logging.Log,System.String)">
             <inheritdoc />
         </member>

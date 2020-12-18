@@ -41,11 +41,9 @@ namespace LiveCoin.Net.Sockets
 		/// </summary>
 		[JsonIgnore]
 		internal PrivateChannelType? PrivateChannelType { get; set; }
-		/// <summary>
-		/// For subscription only. Msg of the response
-		/// </summary>
-		[JsonIgnore]
-		internal byte[]? Msg { get; set; }
-
+		public override string ToString()
+		{
+			return $"{nameof(BinaryData)}, token:'{Token}', ExpectedResponseMsgType:{ExpectedResponseMsgType}, currencyPair;{CurrencyPair}, channelType:{ChannelType}, privateChannelType:{PrivateChannelType}, data:{_data}";
+		}
 	}
 }
