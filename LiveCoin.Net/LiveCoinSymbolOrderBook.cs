@@ -20,6 +20,7 @@ namespace LiveCoin.Net
 		private readonly LiveCoinClient _restClient;
 		private readonly bool _socketClientOwner = false;
 		private readonly LiveCoinSocketClient _socketClient;
+		private long _lastSequence = 0;
 
 		/// <summary>
 		/// Create a new instance
@@ -64,7 +65,7 @@ namespace LiveCoin.Net
 				await _socketClient.Unsubscribe(subResult.Data).ConfigureAwait(false);
 				return new CallResult<UpdateSubscription>(null, bookResult.Error);
 			}
-
+			_lastSequence = bookResult.Data.Time.ToUnixMilliseconds();
 			SetInitialOrderBook(bookResult.Data.Time.ToUnixMilliseconds(), bookResult.Data.Bids, bookResult.Data.Asks);
 
 			return new CallResult<UpdateSubscription>(subResult.Data, null);
@@ -72,7 +73,8 @@ namespace LiveCoin.Net
 
 		private void HandleUpdate(OrderBookNotification data)
 		{
-				UpdateOrderBook(data.Data.Where(d => d.OrderType == OrderBidAskType.Bid), data.Data.Where(d => d.OrderType == OrderBidAskType.Ask));
+			_lastSequence++;
+			UpdateOrderBook(_lastSequence, data.Data.Where(d => d.OrderType == OrderBidAskType.Bid), data.Data.Where(d => d.OrderType == OrderBidAskType.Ask));
 		}
 
 		/// <inheritdoc />
@@ -90,6 +92,7 @@ namespace LiveCoin.Net
 			if (!bookResult)
 				return new CallResult<bool>(false, bookResult.Error);
 
+			_lastSequence = bookResult.Data.Time.ToUnixMilliseconds();
 			SetInitialOrderBook(bookResult.Data.Time.ToUnixMilliseconds(), bookResult.Data.Bids, bookResult.Data.Asks);
 			return new CallResult<bool>(true, null);
 		}

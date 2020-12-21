@@ -61,8 +61,8 @@ Other CryptoExchange.Net implementations:
 
 
 ## Installation
-![Nuget version](https://img.shields.io/nuget/v/livecoin.net.svg)  ![Nuget downloads](https://img.shields.io/nuget/dt/LiveCoin.Net.svg)
-Available on [Nuget](https://www.nuget.org/packages/LiveCoin.Net/).
+[![Nuget version](https://img.shields.io/nuget/v/livecoin.net.svg)  ![Nuget downloads](https://img.shields.io/nuget/dt/LiveCoin.Net.svg)
+Available on [Nuget]](https://www.nuget.org/packages/LiveCoin.Net/).
 ```
 pm> Install-Package LiveCoin.Net
 ```
@@ -83,8 +83,9 @@ LiveCoin.Net provides two clients to interact with the Binance API. The  `LiveCo
 ## Examples
 Examples can be found in the Examples folder.
 
-
 ## Release notes
+* Version 1.0.8 - 21 dec 2020
+    * Correction for re-subscribe after connection drop and change in order book procesing to accomodate LiveCoin use of timestamp.
 * Version 1.0.5 - 12 dec 2020
     * Merge some enum from socket to REST equivalent. Change subscription to flow the response into the notification stream. Upgrade version of dependent package.
 * Version 1.0.4 - 10 dec 2020

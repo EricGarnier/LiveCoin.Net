@@ -28,7 +28,7 @@ namespace LiveCoin.Net
         /// <param name="limit">The top amount of results to keep in sync. If for example limit=10 is used, the order book will contain the 10 best bids and 10 best asks. Leaving this null will sync the full order book</param>
         /// <param name="restClient">The rest client to use. A new one will be created with default option if not provided.</param>
         /// <param name="socketClient">The socket client to use. A new one will be created with default option if not provided.</param>
-        public LiveCoinOrderBookOptions(int? limit = null, LiveCoinClient? restClient=null, LiveCoinSocketClient? socketClient=null) : base("LiveCoin", false, limit != null)
+        public LiveCoinOrderBookOptions(int? limit = null, LiveCoinClient? restClient=null, LiveCoinSocketClient? socketClient=null) : base("LiveCoinOrderBook", false, limit != null)
         {
             Limit = limit;
             RestClient = restClient;

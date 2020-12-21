@@ -9,7 +9,7 @@ namespace LiveCoin.Net.Objects.SocketObjects
 	/// Orderbook event
 	/// </summary>
 	[global::ProtoBuf.ProtoContract()]
-	public class OrderBookEvent : ISymbolOrderSequencedBookEntry
+	public class OrderBookEvent : ISymbolOrderBookEntry
     {
         /// <summary>
         /// Order type
@@ -20,9 +20,8 @@ namespace LiveCoin.Net.Objects.SocketObjects
         /// Order timestamp
         /// </summary>
         public DateTime Timestamp { get; set; }
-        // Use sequand in place of TimestampImpl to satify ISymbolOrderSequencedBookEntry interface
         [global::ProtoBuf.ProtoMember(2)]
-        long ISymbolOrderSequencedBookEntry.Sequence { get => Timestamp.ToUnixMilliseconds(); set => Timestamp = value.ToUnixMilliseconds(); }
+        long TimestampImpl { get => Timestamp.ToUnixMilliseconds(); set => Timestamp = value.ToUnixMilliseconds(); }
         /// <summary>
         /// Price
         /// </summary>

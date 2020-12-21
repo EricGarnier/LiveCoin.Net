@@ -142,10 +142,6 @@ namespace LiveCoin.Net
 				}
 			};
 			result.Token = token;
-			if (! (request is IExpireControl expireControl))
-			{
-				var t = result.Data;
-			}
 			return result;
 		}
 

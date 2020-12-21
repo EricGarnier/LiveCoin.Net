@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 using LiveCoin.Net.Objects.SocketObjects;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ namespace LiveCoin.Net.Sockets
 		/// <summary>
 		/// The binary data in base64 string
 		/// </summary>
-		public string? Data { get { if (_data == null && _buildData != null) { _data = _buildData(); } return _data; } set => _data = value; }
+		public string? Data { get { if (_data == null && _buildData != null) { _data = _buildData(); } return _data; } }
 		/// <summary>
 		/// The token associate with the request
 		/// </summary>
@@ -41,9 +42,15 @@ namespace LiveCoin.Net.Sockets
 		/// </summary>
 		[JsonIgnore]
 		internal PrivateChannelType? PrivateChannelType { get; set; }
+		[OnSerializing]
+		internal void OnSerializingMethod(StreamingContext context)
+		{
+			_data = null;
+		}
+
 		public override string ToString()
 		{
-			return $"{nameof(BinaryData)}, token:'{Token}', ExpectedResponseMsgType:{ExpectedResponseMsgType}, currencyPair;{CurrencyPair}, channelType:{ChannelType}, privateChannelType:{PrivateChannelType}, data:{_data}";
+			return $"{nameof(BinaryData)}, token:'{Token}', ExpectedResponseMsgType:{ExpectedResponseMsgType}, currencyPair:{CurrencyPair}, channelType:{ChannelType}, privateChannelType:{PrivateChannelType}, data:{_data}";
 		}
 	}
 }
