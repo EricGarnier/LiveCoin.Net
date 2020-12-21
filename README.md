@@ -61,8 +61,9 @@ Other CryptoExchange.Net implementations:
 
 
 ## Installation
-[![Nuget version](https://img.shields.io/nuget/v/livecoin.net.svg)  ![Nuget downloads](https://img.shields.io/nuget/dt/LiveCoin.Net.svg)
-Available on [Nuget]](https://www.nuget.org/packages/LiveCoin.Net/).
+[![Nuget](https://img.shields.io/nuget/v/livecoin.net.svg)](https://www.nuget.org/packages/LiveCoin.Net/)
+[![Nuget](https://img.shields.io/nuget/dt/livecoin.net.svg)](https://www.nuget.org/packages/LiveCoin.Net/)
+Available on [Nuget](https://www.nuget.org/packages/LiveCoin.Net/).
 ```
 pm> Install-Package LiveCoin.Net
 ```
