@@ -883,6 +883,13 @@ namespace LiveCoin.Net
 				return res.Success;
 			}
 		}
+		/// <inheritdoc/>
+		protected override void HandleUnhandledMessage(JToken token)
+		{
+			var m = GetWsResponse(token);
+			log.Write(LogVerbosity.Error, $"Unhandled message. ResponseType:{m?.Meta?.ResponseType}, Token:{m?.Meta?.Token} Msg.Length:{m?.Msg?.Length}");
+			base.HandleUnhandledMessage(token);
+		}
 		#endregion
 	}
 }

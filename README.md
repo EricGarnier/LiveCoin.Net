@@ -85,6 +85,8 @@ LiveCoin.Net provides two clients to interact with the Binance API. The  `LiveCo
 Examples can be found in the Examples folder.
 
 ## Release notes
+* Version 1.0.9 - 22 dec 2020
+    * Add unhandled message processing
 * Version 1.0.8 - 21 dec 2020
     * Correction for re-subscribe after connection drop and change in order book procesing to accomodate LiveCoin use of timestamp.
 * Version 1.0.5 - 12 dec 2020

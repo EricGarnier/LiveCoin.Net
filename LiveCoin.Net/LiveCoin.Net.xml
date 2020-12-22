@@ -957,6 +957,9 @@
         <member name="M:LiveCoin.Net.LiveCoinSocketClient.Unsubscribe(CryptoExchange.Net.Sockets.SocketConnection,CryptoExchange.Net.Sockets.SocketSubscription)">
             <inheritdoc/>
         </member>
+        <member name="M:LiveCoin.Net.LiveCoinSocketClient.HandleUnhandledMessage(Newtonsoft.Json.Linq.JToken)">
+            <inheritdoc/>
+        </member>
         <member name="T:LiveCoin.Net.LiveCoinSymbolOrderBook">
             <summary>
             Implementation for a synchronized order book. After calling Start the order book will sync itself and keep up to date with new data. It will automatically try to reconnect and resync in case of a lost/interrupted connection.
