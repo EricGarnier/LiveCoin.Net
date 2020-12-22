@@ -79,7 +79,7 @@ After doing either of above steps you should now be ready to actually start usin
 ## Getting started
 After installing it's time to actually use it. To get started we have to add the LiveCoin.Net namespace:  `using LiveCoin.Net;`.
 
-LiveCoin.Net provides two clients to interact with the Binance API. The  `LiveCoinClient`  provides all rest API calls. The  `LiveCoinSocketClient`  provides functions to interact with the websocket provided by the LiveCoin API. Both clients are disposable and as such can be used in a  `using`statement.
+LiveCoin.Net provides two clients to interact with the LiveCoin API. The  `LiveCoinClient`  provides all rest API calls. The  `LiveCoinSocketClient`  provides functions to interact with the websocket provided by the LiveCoin API. Both clients are disposable and as such can be used in a  `using`statement.
 
 ## Examples
 Examples can be found in the Examples folder.
