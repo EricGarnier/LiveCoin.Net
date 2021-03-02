@@ -56,6 +56,10 @@ Other CryptoExchange.Net implementations:
 <br />
 <a href="https://github.com/ridicoulous/Bitmex.Net">Bitmex</a>
 </td>
+<td><a href="https://github.com/d-ugarov/Exante.Net"><img src="https://github.com/d-ugarov/Exante.Net/blob/master/Exante.Net/Icon/icon.png?raw=true"></a>
+<br />
+<a href="https://github.com/d-ugarov/Exante.Net">Exante</a>
+</td>
 </tr>
 </table>
 
